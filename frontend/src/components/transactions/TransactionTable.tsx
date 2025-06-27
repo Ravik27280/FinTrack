@@ -75,8 +75,8 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({ transactions
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Transactions</h1>
-          <p className="text-gray-600">Manage and track all your financial transactions.</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Transactions</h1>
+          <p className="text-gray-600 dark:text-gray-300">Manage and track all your financial transactions.</p>
         </div>
         <Button>Add Transaction</Button>
       </div>
@@ -96,16 +96,16 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({ transactions
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="px-3 py-2 border border-gray-300/50 dark:border-slate-600/50 rounded-xl bg-white/50 dark:bg-slate-800/50 backdrop-blur-md text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50"
             >
               {categories.map(category => (
-                <option key={category} value={category}>
+                <option key={category} value={category} className="bg-white dark:bg-slate-800 text-gray-900 dark:text-white">
                   {category === 'all' ? 'All Categories' : category}
                 </option>
               ))}
             </select>
             
-            <Button variant="outline" size="sm">
+            <Button variant="glass" size="sm">
               <Filter className="w-4 h-4 mr-2" />
               Filter
             </Button>
@@ -113,17 +113,17 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({ transactions
         </div>
 
         {selectedTransactions.length > 0 && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+          <div className="bg-blue-50 dark:bg-blue-500/20 border border-blue-200 dark:border-blue-500/30 rounded-xl p-4 mb-6 backdrop-blur-md">
             <div className="flex items-center justify-between">
-              <span className="text-blue-800">
+              <span className="text-blue-800 dark:text-blue-300">
                 {selectedTransactions.length} transaction{selectedTransactions.length > 1 ? 's' : ''} selected
               </span>
               <div className="flex items-center space-x-2">
-                <Button variant="outline" size="sm">
+                <Button variant="glass" size="sm">
                   <Edit3 className="w-4 h-4 mr-2" />
                   Edit
                 </Button>
-                <Button variant="outline" size="sm">
+                <Button variant="glass" size="sm">
                   <Trash2 className="w-4 h-4 mr-2" />
                   Delete
                 </Button>
@@ -136,19 +136,19 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({ transactions
         <div className="hidden md:block overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-200">
+              <tr className="border-b border-gray-200/50 dark:border-slate-700/50">
                 <th className="text-left py-3 px-4">
                   <input
                     type="checkbox"
                     checked={selectedTransactions.length === filteredTransactions.length}
                     onChange={handleSelectAll}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="rounded border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-blue-600 focus:ring-blue-500/50 focus:ring-offset-0"
                   />
                 </th>
                 <th className="text-left py-3 px-4">
                   <button
                     onClick={() => handleSort('date')}
-                    className="flex items-center space-x-1 font-medium text-gray-700 hover:text-gray-900"
+                    className="flex items-center space-x-1 font-medium text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white transition-colors"
                   >
                     <span>Date</span>
                     <ArrowUpDown className="w-4 h-4" />
@@ -157,68 +157,68 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({ transactions
                 <th className="text-left py-3 px-4">
                   <button
                     onClick={() => handleSort('description')}
-                    className="flex items-center space-x-1 font-medium text-gray-700 hover:text-gray-900"
+                    className="flex items-center space-x-1 font-medium text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white transition-colors"
                   >
                     <span>Description</span>
                     <ArrowUpDown className="w-4 h-4" />
                   </button>
                 </th>
-                <th className="text-left py-3 px-4">Category</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-700 dark:text-gray-200">Category</th>
                 <th className="text-left py-3 px-4">
                   <button
                     onClick={() => handleSort('amount')}
-                    className="flex items-center space-x-1 font-medium text-gray-700 hover:text-gray-900"
+                    className="flex items-center space-x-1 font-medium text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white transition-colors"
                   >
                     <span>Amount</span>
                     <ArrowUpDown className="w-4 h-4" />
                   </button>
                 </th>
-                <th className="text-left py-3 px-4">Actions</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-700 dark:text-gray-200">Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredTransactions.map((transaction) => (
-                <tr key={transaction.id} className="border-b border-gray-100 hover:bg-gray-50">
+                <tr key={transaction.id} className="border-b border-gray-100/50 dark:border-slate-700/50 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
                   <td className="py-4 px-4">
                     <input
                       type="checkbox"
                       checked={selectedTransactions.includes(transaction.id)}
                       onChange={() => handleSelectTransaction(transaction.id)}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      className="rounded border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-blue-600 focus:ring-blue-500/50 focus:ring-offset-0"
                     />
                   </td>
-                  <td className="py-4 px-4 text-sm text-gray-900">
+                  <td className="py-4 px-4 text-sm text-gray-900 dark:text-gray-100">
                     {new Date(transaction.date).toLocaleDateString()}
                   </td>
                   <td className="py-4 px-4">
                     <div className="flex items-center space-x-3">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                        transaction.type === 'income' ? 'bg-green-100' : 'bg-red-100'
+                      <div className={`w-8 h-8 rounded-xl flex items-center justify-center backdrop-blur-md border border-white/20 dark:border-slate-600/30 ${
+                        transaction.type === 'income' ? 'bg-green-50 dark:bg-green-500/20 text-green-600 dark:text-green-400' : 'bg-red-50 dark:bg-red-500/20 text-red-600 dark:text-red-400'
                       }`}>
                         {transaction.type === 'income' ? (
-                          <ArrowUpRight className="w-4 h-4 text-green-600" />
+                          <ArrowUpRight className="w-4 h-4" />
                         ) : (
-                          <ArrowDownLeft className="w-4 h-4 text-red-600" />
+                          <ArrowDownLeft className="w-4 h-4" />
                         )}
                       </div>
-                      <span className="font-medium text-gray-900">{transaction.description}</span>
+                      <span className="font-medium text-gray-900 dark:text-white">{transaction.description}</span>
                     </div>
                   </td>
-                  <td className="py-4 px-4 text-sm text-gray-600">{transaction.category}</td>
+                  <td className="py-4 px-4 text-sm text-gray-600 dark:text-gray-300">{transaction.category}</td>
                   <td className="py-4 px-4">
                     <span className={`font-semibold ${
-                      transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
+                      transaction.type === 'income' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
                     }`}>
                       {transaction.type === 'income' ? '+' : ''}${Math.abs(transaction.amount).toLocaleString()}
                     </span>
                   </td>
                   <td className="py-4 px-4">
                     <div className="flex items-center space-x-2">
-                      <button className="p-1 hover:bg-gray-100 rounded">
-                        <Edit3 className="w-4 h-4 text-gray-600" />
+                      <button className="p-1 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
+                        <Edit3 className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                       </button>
-                      <button className="p-1 hover:bg-gray-100 rounded">
-                        <Trash2 className="w-4 h-4 text-gray-600" />
+                      <button className="p-1 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
+                        <Trash2 className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                       </button>
                     </div>
                   </td>
@@ -231,44 +231,44 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({ transactions
         {/* Mobile List */}
         <div className="md:hidden space-y-3">
           {filteredTransactions.map((transaction) => (
-            <div key={transaction.id} className="bg-gray-50 rounded-lg p-4">
+            <div key={transaction.id} className="bg-gray-50 dark:bg-slate-800/50 rounded-xl p-4 backdrop-blur-md border border-gray-200/50 dark:border-slate-700/50">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center space-x-3">
                   <input
                     type="checkbox"
                     checked={selectedTransactions.includes(transaction.id)}
                     onChange={() => handleSelectTransaction(transaction.id)}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="rounded border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-blue-600 focus:ring-blue-500/50 focus:ring-offset-0"
                   />
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                    transaction.type === 'income' ? 'bg-green-100' : 'bg-red-100'
+                  <div className={`w-8 h-8 rounded-xl flex items-center justify-center backdrop-blur-md border border-white/20 dark:border-slate-600/30 ${
+                    transaction.type === 'income' ? 'bg-green-50 dark:bg-green-500/20 text-green-600 dark:text-green-400' : 'bg-red-50 dark:bg-red-500/20 text-red-600 dark:text-red-400'
                   }`}>
                     {transaction.type === 'income' ? (
-                      <ArrowUpRight className="w-4 h-4 text-green-600" />
+                      <ArrowUpRight className="w-4 h-4" />
                     ) : (
-                      <ArrowDownLeft className="w-4 h-4 text-red-600" />
+                      <ArrowDownLeft className="w-4 h-4" />
                     )}
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900">{transaction.description}</p>
-                    <p className="text-sm text-gray-500">{transaction.category}</p>
+                    <p className="font-medium text-gray-900 dark:text-white">{transaction.description}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{transaction.category}</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <button className="p-1 hover:bg-gray-100 rounded">
-                    <Edit3 className="w-4 h-4 text-gray-600" />
+                  <button className="p-1 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
+                    <Edit3 className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                   </button>
-                  <button className="p-1 hover:bg-gray-100 rounded">
-                    <Trash2 className="w-4 h-4 text-gray-600" />
+                  <button className="p-1 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
+                    <Trash2 className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                   </button>
                 </div>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-gray-500 dark:text-gray-400">
                   {new Date(transaction.date).toLocaleDateString()}
                 </span>
                 <span className={`font-semibold ${
-                  transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
+                  transaction.type === 'income' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
                 }`}>
                   {transaction.type === 'income' ? '+' : ''}${Math.abs(transaction.amount).toLocaleString()}
                 </span>
@@ -279,7 +279,7 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({ transactions
 
         {filteredTransactions.length === 0 && (
           <div className="text-center py-8">
-            <p className="text-gray-500">No transactions found matching your criteria.</p>
+            <p className="text-gray-500 dark:text-gray-400">No transactions found matching your criteria.</p>
           </div>
         )}
       </Card>

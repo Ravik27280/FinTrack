@@ -18,8 +18,8 @@ export const StatsCards: React.FC<StatsCardsProps> = ({
       title: 'Total Balance',
       value: totalBalance,
       icon: DollarSign,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50',
+      color: 'text-blue-500 dark:text-blue-400',
+      bgColor: 'bg-blue-50 dark:bg-blue-500/20',
       change: '+2.5%',
       changeType: 'positive' as const
     },
@@ -27,8 +27,8 @@ export const StatsCards: React.FC<StatsCardsProps> = ({
       title: 'Income',
       value: totalIncome,
       icon: TrendingUp,
-      color: 'text-green-600',
-      bgColor: 'bg-green-50',
+      color: 'text-green-500 dark:text-green-400',
+      bgColor: 'bg-green-50 dark:bg-green-500/20',
       change: '+12.3%',
       changeType: 'positive' as const
     },
@@ -36,8 +36,8 @@ export const StatsCards: React.FC<StatsCardsProps> = ({
       title: 'Expenses',
       value: totalExpenses,
       icon: TrendingDown,
-      color: 'text-red-600',
-      bgColor: 'bg-red-50',
+      color: 'text-red-500 dark:text-red-400',
+      bgColor: 'bg-red-50 dark:bg-red-500/20',
       change: '-5.1%',
       changeType: 'negative' as const
     }
@@ -49,15 +49,15 @@ export const StatsCards: React.FC<StatsCardsProps> = ({
         const Icon = stat.icon;
         
         return (
-          <Card key={index} className="hover:shadow-md transition-shadow duration-200">
+          <Card key={index} className="hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 hover:scale-105">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600 mb-1">{stat.title}</p>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{stat.title}</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">
                   ${Math.abs(stat.value).toLocaleString()}
                 </p>
                 <div className={`flex items-center mt-2 text-sm ${
-                  stat.changeType === 'positive' ? 'text-green-600' : 'text-red-600'
+                  stat.changeType === 'positive' ? 'text-green-500 dark:text-green-400' : 'text-red-500 dark:text-red-400'
                 }`}>
                   {stat.changeType === 'positive' ? (
                     <TrendingUp className="w-4 h-4 mr-1" />
@@ -67,7 +67,7 @@ export const StatsCards: React.FC<StatsCardsProps> = ({
                   <span>{stat.change} from last month</span>
                 </div>
               </div>
-              <div className={`w-12 h-12 rounded-lg ${stat.bgColor} flex items-center justify-center`}>
+              <div className={`w-12 h-12 rounded-2xl ${stat.bgColor} flex items-center justify-center backdrop-blur-md border border-white/20 dark:border-slate-600/30`}>
                 <Icon className={`w-6 h-6 ${stat.color}`} />
               </div>
             </div>

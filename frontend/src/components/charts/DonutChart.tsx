@@ -34,7 +34,7 @@ export const DonutChart: React.FC<DonutChartProps> = ({ data, size = 200 }) => {
   return (
     <div className="flex items-center space-x-8">
       <div className="relative">
-        <svg width={size} height={size} className="transform -rotate-90">
+        <svg width={size} height={size} className="transform -rotate-90 drop-shadow-lg">
           {data.map((item, index) => {
             const percentage = (item.value / total) * 100;
             const path = createPath(percentage, cumulativePercentage);
@@ -45,7 +45,8 @@ export const DonutChart: React.FC<DonutChartProps> = ({ data, size = 200 }) => {
                 key={index}
                 d={path}
                 fill={item.color}
-                className="hover:opacity-80 transition-opacity duration-200"
+                className="hover:opacity-80 transition-all duration-300 hover:drop-shadow-lg"
+                style={{ filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.1))' }}
               />
             );
           })}
@@ -54,27 +55,27 @@ export const DonutChart: React.FC<DonutChartProps> = ({ data, size = 200 }) => {
             cx={center}
             cy={center}
             r={radius - strokeWidth}
-            fill="white"
+            fill="transparent"
           />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <div className="text-2xl font-semibold text-gray-900">
+          <div className="text-2xl font-semibold text-gray-900 dark:text-white">
             ${total.toLocaleString()}
           </div>
-          <div className="text-sm text-gray-500">Total Expenses</div>
+          <div className="text-sm text-gray-500 dark:text-gray-400">Total Expenses</div>
         </div>
       </div>
       
       <div className="space-y-3">
         {data.map((item, index) => (
-          <div key={index} className="flex items-center space-x-3">
+          <div key={index} className="flex items-center space-x-3 p-2 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
             <div 
-              className="w-3 h-3 rounded-full" 
+              className="w-3 h-3 rounded-full shadow-lg" 
               style={{ backgroundColor: item.color }}
             />
             <div className="flex-1">
-              <div className="text-sm font-medium text-gray-900">{item.label}</div>
-              <div className="text-sm text-gray-500">
+              <div className="text-sm font-medium text-gray-900 dark:text-white">{item.label}</div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">
                 ${item.value.toLocaleString()} ({((item.value / total) * 100).toFixed(1)}%)
               </div>
             </div>

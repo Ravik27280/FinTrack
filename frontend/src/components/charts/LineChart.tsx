@@ -27,24 +27,33 @@ export const LineChart: React.FC<LineChartProps> = ({ data, height = 200 }) => {
   
   return (
     <div>
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">6-Month Spending Trend</h3>
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">6-Month Spending Trend</h3>
       <svg width={width} height={height} className="overflow-visible">
         {/* Grid lines */}
         <defs>
           <pattern id="grid" width="40" height="20" patternUnits="userSpaceOnUse">
-            <path d="M 40 0 L 0 0 0 20" fill="none" stroke="#f3f4f6" strokeWidth="1"/>
+            <path d="M 40 0 L 0 0 0 20" fill="none" stroke="rgba(156, 163, 175, 0.3)" strokeWidth="1"/>
           </pattern>
+          <pattern id="grid-dark" width="40" height="20" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 20" fill="none" stroke="rgba(71, 85, 105, 0.3)" strokeWidth="1"/>
+          </pattern>
+          <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#3B82F6" />
+            <stop offset="100%" stopColor="#8B5CF6" />
+          </linearGradient>
         </defs>
-        <rect width={width} height={height} fill="url(#grid)" />
+        <rect width={width} height={height} fill="url(#grid)" className="dark:hidden" />
+        <rect width={width} height={height} fill="url(#grid-dark)" className="hidden dark:block" />
         
         {/* Line */}
         <path
           d={pathData}
           fill="none"
-          stroke="#2563EB"
+          stroke="url(#lineGradient)"
           strokeWidth="3"
           strokeLinecap="round"
           strokeLinejoin="round"
+          className="drop-shadow-lg"
         />
         
         {/* Points */}
@@ -53,23 +62,29 @@ export const LineChart: React.FC<LineChartProps> = ({ data, height = 200 }) => {
             <circle
               cx={point.x}
               cy={point.y}
-              r="4"
-              fill="#2563EB"
-              className="hover:r-6 transition-all duration-200"
+              r="6"
+              fill="url(#lineGradient)"
+              className="hover:r-8 transition-all duration-300 drop-shadow-lg"
+            />
+            <circle
+              cx={point.x}
+              cy={point.y}
+              r="3"
+              fill="white"
             />
             <text
               x={point.x}
               y={height - 10}
               textAnchor="middle"
-              className="text-xs fill-gray-600"
+              className="text-xs fill-gray-600 dark:fill-gray-400"
             >
               {point.month}
             </text>
             <text
               x={point.x}
-              y={point.y - 10}
+              y={point.y - 15}
               textAnchor="middle"
-              className="text-xs fill-gray-700 font-medium"
+              className="text-xs fill-gray-700 dark:fill-gray-300 font-medium"
             >
               ${point.amount.toLocaleString()}
             </text>
