@@ -73,9 +73,12 @@ function App() {
         </div>
 
         {!user ? (
-          renderScreen()
+          <div className="relative z-10">
+            {renderScreen()}
+          </div>
         ) : (
-          <div className="flex relative z-10">
+          <>
+            {/* Fixed Sidebar - Absolutely no gaps */}
             <Sidebar
               currentScreen={currentScreen}
               onScreenChange={setCurrentScreen}
@@ -84,17 +87,21 @@ function App() {
               onLogout={handleLogout}
             />
             
-            <div className="flex-1 flex flex-col">
-              <main className="flex-1 p-6 pb-20 md:pb-6">
+            {/* Main Content Area - Perfect alignment with sidebar */}
+            <div className={`transition-all duration-300 relative z-10 ${
+              isSidebarCollapsed ? 'md:ml-16' : 'md:ml-64'
+            }`}>
+              <main className="min-h-screen p-6 pb-20 md:pb-6">
                 {renderScreen()}
               </main>
             </div>
             
+            {/* Mobile Bottom Navigation */}
             <BottomNav
               currentScreen={currentScreen}
               onScreenChange={setCurrentScreen}
             />
-          </div>
+          </>
         )}
       </div>
     </ThemeProvider>
