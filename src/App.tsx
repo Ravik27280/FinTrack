@@ -73,9 +73,11 @@ function App() {
         </div>
 
         {!user ? (
-          renderScreen()
+          <div className="relative z-10">
+            {renderScreen()}
+          </div>
         ) : (
-          <div className="flex">
+          <>
             {/* Fixed Sidebar */}
             <Sidebar
               currentScreen={currentScreen}
@@ -85,8 +87,8 @@ function App() {
               onLogout={handleLogout}
             />
             
-            {/* Main Content Area */}
-            <div className="flex-1 md:ml-64 relative z-10">
+            {/* Main Content Area - Offset by sidebar width */}
+            <div className="md:ml-64 relative z-10">
               <main className="p-6 pb-20 md:pb-6 min-h-screen">
                 {renderScreen()}
               </main>
@@ -97,7 +99,7 @@ function App() {
               currentScreen={currentScreen}
               onScreenChange={setCurrentScreen}
             />
-          </div>
+          </>
         )}
       </div>
     </ThemeProvider>
