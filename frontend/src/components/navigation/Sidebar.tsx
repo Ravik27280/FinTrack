@@ -36,40 +36,40 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <div className={`
-      bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl 
-      border-r border-gray-200/50 dark:border-slate-700/50 
+      fixed left-0 top-0 h-screen z-50
+      bg-white/90 dark:bg-slate-900/95 backdrop-blur-xl 
+      border-r border-gray-200/30 dark:border-slate-700/30 
+      shadow-2xl shadow-black/10 dark:shadow-black/30
       transition-all duration-300 ${isCollapsed ? 'w-16' : 'w-64'} 
-      hidden md:flex flex-col shadow-xl
+      hidden md:flex flex-col
     `}>
-      <div className="p-6 border-b border-gray-200/50 dark:border-slate-700/50">
-        <div className="flex items-center justify-between">
-          {!isCollapsed && (
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" />
-                </svg>
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900 dark:text-white">FinTrack</h1>
-              </div>
+      {/* Header - Compact and clean */}
+      <div className="h-16 px-4 border-b border-gray-200/30 dark:border-slate-700/30 flex items-center justify-between flex-shrink-0">
+        {!isCollapsed && (
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25">
+              <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" />
+              </svg>
             </div>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white">FinTrack</h1>
+          </div>
+        )}
+        <button
+          onClick={onToggleCollapse}
+          className="p-2 rounded-xl hover:bg-gray-100/80 dark:hover:bg-slate-800/80 transition-colors"
+        >
+          {isCollapsed ? (
+            <ChevronRight className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+          ) : (
+            <ChevronLeft className="w-5 h-5 text-gray-600 dark:text-gray-300" />
           )}
-          <button
-            onClick={onToggleCollapse}
-            className="p-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors backdrop-blur-md"
-          >
-            {isCollapsed ? (
-              <ChevronRight className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-            ) : (
-              <ChevronLeft className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-            )}
-          </button>
-        </div>
+        </button>
       </div>
 
-      <nav className="flex-1 p-4">
-        <ul className="space-y-2">
+      {/* Navigation - Optimized spacing */}
+      <nav className="flex-1 px-3 py-4 min-h-0">
+        <ul className="space-y-1">
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = currentScreen === item.id;
@@ -79,16 +79,20 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <button
                   onClick={() => onScreenChange(item.id)}
                   className={`
-                    w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all duration-300
+                    w-full flex items-center space-x-3 px-3 py-3 rounded-xl transition-all duration-300 group
                     ${isActive 
-                      ? 'bg-blue-500/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/20 dark:border-blue-500/30 shadow-lg shadow-blue-500/10' 
-                      : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white'
+                      ? 'bg-gradient-to-r from-blue-500/20 to-purple-500/20 dark:from-blue-500/30 dark:to-purple-500/30 text-blue-600 dark:text-blue-400 border border-blue-500/30 dark:border-blue-500/40 shadow-lg shadow-blue-500/20 scale-105' 
+                      : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-slate-800/80 hover:text-gray-900 dark:hover:text-white hover:scale-102'
                     }
                   `}
                 >
-                  <Icon className={`w-5 h-5 ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}`} />
+                  <Icon className={`w-5 h-5 flex-shrink-0 transition-all duration-300 ${
+                    isActive 
+                      ? 'text-blue-600 dark:text-blue-400 scale-110' 
+                      : 'text-gray-500 dark:text-gray-400 group-hover:scale-105'
+                  }`} />
                   {!isCollapsed && (
-                    <span className="font-medium">{item.label}</span>
+                    <span className="font-medium truncate">{item.label}</span>
                   )}
                 </button>
               </li>
@@ -97,35 +101,40 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </ul>
       </nav>
 
-      <div className="p-4 border-t border-gray-200/50 dark:border-slate-700/50">
-        <div className="space-y-2">
-          {!isCollapsed && (
-            <div className="mb-4">
-              <ThemeToggle />
-            </div>
-          )}
-          
-          <button className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white transition-colors ${isCollapsed ? 'justify-center' : ''}`}>
-            <Settings className="w-5 h-5" />
-            {!isCollapsed && <span>Settings</span>}
+      {/* Footer - Clean and organized */}
+      <div className="px-3 pb-4 flex-shrink-0 space-y-3">
+        {/* Theme Toggle */}
+        {!isCollapsed && (
+          <div className="px-2">
+            <ThemeToggle />
+          </div>
+        )}
+        
+        {/* Action Buttons */}
+        <div className="space-y-1">
+          <button className={`w-full flex items-center space-x-3 px-3 py-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-slate-800/80 hover:text-gray-900 dark:hover:text-white transition-all duration-300 group ${isCollapsed ? 'justify-center' : ''}`}>
+            <Settings className="w-5 h-5 flex-shrink-0 group-hover:rotate-90 transition-transform duration-300" />
+            {!isCollapsed && <span className="truncate">Settings</span>}
           </button>
+          
           <button 
             onClick={onLogout}
-            className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors ${isCollapsed ? 'justify-center' : ''}`}
+            className={`w-full flex items-center space-x-3 px-3 py-3 rounded-xl text-red-500 dark:text-red-400 hover:bg-red-50/80 dark:hover:bg-red-500/10 transition-all duration-300 group ${isCollapsed ? 'justify-center' : ''}`}
           >
-            <LogOut className="w-5 h-5" />
-            {!isCollapsed && <span>Logout</span>}
+            <LogOut className="w-5 h-5 flex-shrink-0 group-hover:translate-x-1 transition-transform duration-300" />
+            {!isCollapsed && <span className="truncate">Logout</span>}
           </button>
         </div>
 
+        {/* User Profile */}
         {!isCollapsed && (
-          <div className="mt-4 pt-4 border-t border-gray-200/50 dark:border-slate-700/50">
+          <div className="p-3 rounded-xl bg-gray-50/80 dark:bg-slate-800/80 border border-gray-200/50 dark:border-slate-700/50 backdrop-blur-md">
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                <span className="text-sm font-medium text-white">JD</span>
+              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg">
+                <span className="text-sm font-bold text-white">JD</span>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 dark:text-white truncate">John Doe</p>
+                <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">John Doe</p>
                 <p className="text-xs text-gray-500 dark:text-gray-400 truncate">john@example.com</p>
               </div>
             </div>
