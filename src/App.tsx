@@ -78,7 +78,7 @@ function App() {
           </div>
         ) : (
           <>
-            {/* Fixed Sidebar */}
+            {/* Fixed Sidebar - No gaps */}
             <Sidebar
               currentScreen={currentScreen}
               onScreenChange={setCurrentScreen}
@@ -87,9 +87,9 @@ function App() {
               onLogout={handleLogout}
             />
             
-            {/* Main Content Area - Offset by sidebar width */}
+            {/* Main Content Area - Perfectly aligned with sidebar */}
             <div className="md:ml-64 relative z-10">
-              <main className="p-6 pb-20 md:pb-6 min-h-screen">
+              <main className="min-h-screen p-6 pb-20 md:pb-6">
                 {renderScreen()}
               </main>
             </div>
