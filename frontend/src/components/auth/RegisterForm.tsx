@@ -66,12 +66,12 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onRegister, onSwitch
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 dark:from-slate-950 dark:via-purple-950 dark:to-slate-950 flex items-center justify-center px-4 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-purple-900 dark:to-slate-900 flex items-center justify-center px-4 relative overflow-hidden">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl animate-pulse delay-500"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500/10 dark:bg-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-500/10 dark:bg-blue-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-purple-500/5 dark:bg-indigo-500/10 rounded-full blur-3xl animate-pulse delay-500"></div>
       </div>
 
       {/* Theme toggle */}
@@ -86,8 +86,8 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onRegister, onSwitch
               <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" />
             </svg>
           </div>
-          <h2 className="text-3xl font-bold text-white mb-2">Create account</h2>
-          <p className="text-gray-300">Start managing your finances today</p>
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Create account</h2>
+          <p className="text-gray-600 dark:text-gray-300">Start managing your finances today</p>
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -125,7 +125,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onRegister, onSwitch
                 />
                 <button
                   type="button"
-                  className="absolute right-3 top-9 text-gray-400 hover:text-gray-300 transition-colors"
+                  className="absolute right-3 top-9 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -140,12 +140,12 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onRegister, onSwitch
                         <div
                           key={index}
                           className={`h-2 rounded-full flex-1 transition-all duration-300 ${
-                            index < passwordStrength ? strengthColors[passwordStrength - 1] : 'bg-white/20'
+                            index < passwordStrength ? strengthColors[passwordStrength - 1] : 'bg-gray-200 dark:bg-slate-600'
                           }`}
                         />
                       ))}
                     </div>
-                    <span className="text-xs text-gray-400">
+                    <span className="text-xs text-gray-600 dark:text-gray-400">
                       {passwordStrength > 0 ? strengthLabels[passwordStrength - 1] : ''}
                     </span>
                   </div>
@@ -164,12 +164,12 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onRegister, onSwitch
             />
 
             <div className="flex items-center">
-              <input type="checkbox" className="rounded border-white/20 bg-white/10 text-blue-600 focus:ring-blue-500/50 focus:ring-offset-0" required />
-              <span className="ml-2 text-sm text-gray-300">
+              <input type="checkbox" className="rounded border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-blue-600 focus:ring-blue-500/50 focus:ring-offset-0" required />
+              <span className="ml-2 text-sm text-gray-600 dark:text-gray-300">
                 I agree to the{' '}
-                <a href="#" className="text-blue-400 hover:text-blue-300 transition-colors">Terms of Service</a>
+                <a href="#" className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">Terms of Service</a>
                 {' '}and{' '}
-                <a href="#" className="text-blue-400 hover:text-blue-300 transition-colors">Privacy Policy</a>
+                <a href="#" className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">Privacy Policy</a>
               </span>
             </div>
 
@@ -179,10 +179,10 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onRegister, onSwitch
 
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-white/20" />
+                <div className="w-full border-t border-gray-300 dark:border-slate-600" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-transparent text-gray-400">Or continue with</span>
+                <span className="px-2 bg-white dark:bg-slate-800 text-gray-500 dark:text-gray-400">Or continue with</span>
               </div>
             </div>
 
@@ -206,11 +206,11 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onRegister, onSwitch
           </Card>
 
           <div className="text-center">
-            <span className="text-gray-400">Already have an account? </span>
+            <span className="text-gray-600 dark:text-gray-400">Already have an account? </span>
             <button
               type="button"
               onClick={onSwitchToLogin}
-              className="text-blue-400 hover:text-blue-300 font-medium transition-colors"
+              className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors"
             >
               Sign in
             </button>

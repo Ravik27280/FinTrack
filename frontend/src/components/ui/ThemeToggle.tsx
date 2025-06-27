@@ -9,12 +9,12 @@ export const ThemeToggle: React.FC = () => {
     <button
       onClick={toggleTheme}
       className="relative w-14 h-7 rounded-full p-1 transition-all duration-300 ease-in-out
-                 bg-white/10 dark:bg-white/10 backdrop-blur-md border border-white/20
-                 hover:bg-white/20 dark:hover:bg-white/20 focus:outline-none focus:ring-2 
+                 bg-gray-200 dark:bg-slate-700 border border-gray-300 dark:border-slate-600
+                 hover:bg-gray-300 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 
                  focus:ring-blue-500/50 focus:ring-offset-2 focus:ring-offset-transparent"
     >
       <div
-        className={`w-5 h-5 rounded-full transition-all duration-300 ease-in-out flex items-center justify-center
+        className={`w-5 h-5 rounded-full transition-all duration-300 ease-in-out flex items-center justify-center shadow-md
                    ${isDark 
                      ? 'translate-x-7 bg-slate-800 text-yellow-400' 
                      : 'translate-x-0 bg-yellow-400 text-slate-800'

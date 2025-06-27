@@ -28,9 +28,9 @@ export const Input: React.FC<InputProps> = ({
         )}
         <input
           className={`
-            block w-full rounded-xl border border-white/20 dark:border-white/10 px-3 py-2.5 
+            block w-full rounded-xl border border-gray-300/50 dark:border-slate-600/50 px-3 py-2.5 
             text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400
-            bg-white/10 dark:bg-white/5 backdrop-blur-md
+            bg-white/50 dark:bg-slate-800/50 backdrop-blur-md
             focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/50 
             focus:ring-offset-2 focus:ring-offset-transparent focus:outline-none 
             transition-all duration-300
@@ -42,7 +42,7 @@ export const Input: React.FC<InputProps> = ({
         />
       </div>
       {error && (
-        <p className="text-sm text-red-400">{error}</p>
+        <p className="text-sm text-red-500 dark:text-red-400">{error}</p>
       )}
     </div>
   );

@@ -20,8 +20,8 @@ export const Card: React.FC<CardProps> = ({
   };
   
   const glassClasses = glass 
-    ? 'bg-white/10 dark:bg-white/5 backdrop-blur-md border border-white/20 dark:border-white/10' 
-    : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700';
+    ? 'bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl border border-gray-200/50 dark:border-slate-700/50' 
+    : 'bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700';
   
   return (
     <div className={`rounded-2xl shadow-xl ${glassClasses} ${paddingClasses[padding]} ${className}`}>
