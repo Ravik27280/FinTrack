@@ -16,7 +16,7 @@ export const Input: React.FC<InputProps> = ({
   return (
     <div className="space-y-1">
       {label && (
-        <label className="block text-sm font-medium text-gray-700">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
           {label}
         </label>
       )}
@@ -28,18 +28,21 @@ export const Input: React.FC<InputProps> = ({
         )}
         <input
           className={`
-            block w-full rounded-lg border border-gray-300 px-3 py-2.5 text-gray-900 
-            placeholder-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 
-            focus:ring-offset-2 focus:outline-none transition-all duration-200
+            block w-full rounded-xl border border-white/20 dark:border-white/10 px-3 py-2.5 
+            text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400
+            bg-white/10 dark:bg-white/5 backdrop-blur-md
+            focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/50 
+            focus:ring-offset-2 focus:ring-offset-transparent focus:outline-none 
+            transition-all duration-300
             ${icon ? 'pl-10' : ''}
-            ${error ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}
+            ${error ? 'border-red-500/50 focus:border-red-500/50 focus:ring-red-500/50' : ''}
             ${className}
           `}
           {...props}
         />
       </div>
       {error && (
-        <p className="text-sm text-red-600">{error}</p>
+        <p className="text-sm text-red-400">{error}</p>
       )}
     </div>
   );

@@ -37,3 +37,8 @@ export interface User {
 }
 
 export type Screen = 'login' | 'register' | 'dashboard' | 'transactions' | 'budget' | 'insights';
+
+export interface ThemeContextType {
+  isDark: boolean;
+  toggleTheme: () => void;
+}
