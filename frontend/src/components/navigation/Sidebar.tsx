@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   CreditCard, 
@@ -9,30 +10,33 @@ import {
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
-import { Screen } from '../../types';
 import { ThemeToggle } from '../ui/ThemeToggle';
 
 interface SidebarProps {
-  currentScreen: Screen;
-  onScreenChange: (screen: Screen) => void;
   isCollapsed: boolean;
   onToggleCollapse: () => void;
   onLogout: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ 
-  currentScreen, 
-  onScreenChange, 
   isCollapsed, 
   onToggleCollapse,
   onLogout 
 }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const menuItems = [
-    { id: 'dashboard' as Screen, label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'transactions' as Screen, label: 'Transactions', icon: CreditCard },
-    { id: 'budget' as Screen, label: 'Budget', icon: Target },
-    { id: 'insights' as Screen, label: 'AI Insights', icon: Brain }
+    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
+    { id: 'transactions', label: 'Transactions', icon: CreditCard, path: '/transactions' },
+    { id: 'budget', label: 'Budget', icon: Target, path: '/budget' },
+    { id: 'insights', label: 'AI Insights', icon: Brain, path: '/insights' }
   ];
+
+  const handleLogout = () => {
+    onLogout();
+    navigate('/login');
+  };
 
   return (
     <div className={`
@@ -43,7 +47,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       transition-all duration-300 ${isCollapsed ? 'w-16' : 'w-64'} 
       hidden md:flex flex-col
     `}>
-      {/* Header - Compact and clean */}
+      {/* Header */}
       <div className="h-16 px-4 border-b border-gray-200/30 dark:border-slate-700/30 flex items-center justify-between flex-shrink-0">
         {!isCollapsed && (
           <div className="flex items-center space-x-3">
@@ -67,17 +71,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </button>
       </div>
 
-      {/* Navigation - Optimized spacing */}
+      {/* Navigation */}
       <nav className="flex-1 px-3 py-4 min-h-0">
         <ul className="space-y-1">
           {menuItems.map((item) => {
             const Icon = item.icon;
-            const isActive = currentScreen === item.id;
+            const isActive = location.pathname === item.path;
             
             return (
               <li key={item.id}>
                 <button
-                  onClick={() => onScreenChange(item.id)}
+                  onClick={() => navigate(item.path)}
                   className={`
                     w-full flex items-center space-x-3 px-3 py-3 rounded-xl transition-all duration-300 group
                     ${isActive 
@@ -101,7 +105,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </ul>
       </nav>
 
-      {/* Footer - Clean and organized */}
+      {/* Footer */}
       <div className="px-3 pb-4 flex-shrink-0 space-y-3">
         {/* Theme Toggle */}
         {!isCollapsed && (
@@ -118,7 +122,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </button>
           
           <button 
-            onClick={onLogout}
+            onClick={handleLogout}
             className={`w-full flex items-center space-x-3 px-3 py-3 rounded-xl text-red-500 dark:text-red-400 hover:bg-red-50/80 dark:hover:bg-red-500/10 transition-all duration-300 group ${isCollapsed ? 'justify-center' : ''}`}
           >
             <LogOut className="w-5 h-5 flex-shrink-0 group-hover:translate-x-1 transition-transform duration-300" />

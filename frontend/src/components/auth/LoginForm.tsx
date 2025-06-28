@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { Card } from '../ui/Card';
 import { ThemeToggle } from '../ui/ThemeToggle';
-import { login } from '../services/authService'; // Make sure this exists
-
+import { login } from '../services/authService';
 
 interface LoginFormProps {
   onLogin: (email: string, password: string) => void;
   onSwitchToRegister: () => void;
 }
 
-
 export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onSwitchToRegister }) => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -43,13 +43,10 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onSwitchToRegiste
 
     if (validateForm()) {
       try {
-        const res = await login(email, password); // This hits the backend
-
-        // Optionally: Save token in localStorage or context
+        const res = await login(email, password);
         localStorage.setItem('token', res.token);
-
-        // Call onLogin to switch the screen and set user info
         onLogin(res.user.email, password);
+        navigate('/dashboard');
       } catch (err: any) {
         console.error(err);
         alert(err.response?.data?.error || 'Login failed');
@@ -144,7 +141,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onSwitchToRegiste
             <span className="text-gray-600 dark:text-gray-400">Don't have an account? </span>
             <button
               type="button"
-              onClick={onSwitchToRegister}
+              onClick={() => navigate('/register')}
               className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors"
             >
               Sign up
