@@ -8,9 +8,11 @@ import {
   Settings, 
   LogOut,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Globe
 } from 'lucide-react';
 import { ThemeToggle } from '../ui/ThemeToggle';
+import { useCurrency } from '../settings/CurrencySelector';
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -25,6 +27,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { currency } = useCurrency();
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
@@ -90,6 +93,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
           )}
         </button>
       </div>
+
+      {/* Currency Display */}
+      {!isCollapsed && (
+        <div className="px-4 py-3 border-b border-gray-200/30 dark:border-slate-700/30">
+          <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300">
+            <Globe className="w-4 h-4" />
+            <span>Currency: {currency.flag} {currency.code}</span>
+          </div>
+        </div>
+      )}
 
       {/* Navigation */}
       <nav className="flex-1 px-3 py-4 min-h-0">

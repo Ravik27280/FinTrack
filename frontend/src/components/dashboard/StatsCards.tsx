@@ -6,25 +6,27 @@ interface StatsCardsProps {
   totalBalance: number;
   totalIncome: number;
   totalExpenses: number;
+  formatAmount: (amount: number) => string;
 }
 
 export const StatsCards: React.FC<StatsCardsProps> = ({ 
   totalBalance, 
   totalIncome, 
-  totalExpenses 
+  totalExpenses,
+  formatAmount
 }) => {
   const stats = [
     {
       title: 'Total Balance',
       value: totalBalance,
       icon: DollarSign,
-      color: 'text-blue-500 dark:text-blue-400',
-      bgColor: 'bg-blue-50 dark:bg-blue-500/20',
+      color: totalBalance >= 0 ? 'text-blue-500 dark:text-blue-400' : 'text-red-500 dark:text-red-400',
+      bgColor: totalBalance >= 0 ? 'bg-blue-50 dark:bg-blue-500/20' : 'bg-red-50 dark:bg-red-500/20',
       change: '+2.5%',
       changeType: 'positive' as const
     },
     {
-      title: 'Income',
+      title: 'Total Income',
       value: totalIncome,
       icon: TrendingUp,
       color: 'text-green-500 dark:text-green-400',
@@ -33,7 +35,7 @@ export const StatsCards: React.FC<StatsCardsProps> = ({
       changeType: 'positive' as const
     },
     {
-      title: 'Expenses',
+      title: 'Total Expenses',
       value: totalExpenses,
       icon: TrendingDown,
       color: 'text-red-500 dark:text-red-400',
@@ -54,7 +56,7 @@ export const StatsCards: React.FC<StatsCardsProps> = ({
               <div>
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{stat.title}</p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  ${Math.abs(stat.value).toLocaleString()}
+                  {formatAmount(Math.abs(stat.value))}
                 </p>
                 <div className={`flex items-center mt-2 text-sm ${
                   stat.changeType === 'positive' ? 'text-green-500 dark:text-green-400' : 'text-red-500 dark:text-red-400'
