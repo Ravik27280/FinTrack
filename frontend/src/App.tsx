@@ -10,7 +10,7 @@ import { BudgetOverview } from './components/budget/BudgetOverview';
 import { AIInsights } from './components/insights/AIInsights';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { User } from './types';
-import { mockTransactions, mockBudgetItems, aiInsights } from './data/mockData';
+import { mockBudgetItems, aiInsights } from './data/mockData';
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
@@ -133,11 +133,11 @@ function App() {
                   <Routes>
                     <Route 
                       path="/dashboard" 
-                      element={<Dashboard transactions={mockTransactions} />} 
+                      element={<Dashboard />} 
                     />
                     <Route 
                       path="/transactions" 
-                      element={<TransactionTable transactions={mockTransactions} />} 
+                      element={<TransactionTable />} 
                     />
                     <Route 
                       path="/budget" 
