@@ -44,6 +44,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onSwitchToRegiste
 
     if (validateForm()) {
       setIsLoading(true);
+
       try {
         const res = await login(email, password);
         localStorage.setItem('token', res.token);
