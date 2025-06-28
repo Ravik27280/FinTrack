@@ -16,3 +16,20 @@ exports.delete = async (req, res) => {
   await Transaction.findOneAndDelete({ _id: id, userId: req.userId });
   res.json({ message: "Deleted" });
 };
+
+exports.update = async (req, res) => {
+  const { id } = req.params;
+  const updateData = req.body;
+
+  const updated = await Transaction.findOneAndUpdate(
+    { _id: id, userId: req.userId },  // Ensure the user owns it
+    updateData,
+    { new: true }  // Return the updated document
+  );
+
+  if (!updated) {
+    return res.status(404).json({ message: "Transaction not found or not authorized" });
+  }
+
+  res.json(updated);
+};
