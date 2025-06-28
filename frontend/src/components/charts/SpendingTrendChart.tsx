@@ -87,26 +87,16 @@ export const SpendingTrendChart: React.FC<SpendingTrendChartProps> = ({
   const maxAmount = Math.max(...trendData.map(d => d.amount));
   const avgAmount = trendData.reduce((sum, d) => sum + d.amount, 0) / trendData.length;
   
-  const width = 500;
   const height = 200;
   const padding = 40;
-  const chartWidth = width - padding * 2;
   const chartHeight = height - padding * 2;
   
-  const getX = (index: number) => padding + (index / (trendData.length - 1)) * chartWidth;
+  const getX = (index: number, totalWidth: number) => {
+    const usableWidth = totalWidth - padding * 2;
+    return padding + (index / (trendData.length - 1)) * usableWidth;
+  };
+  
   const getY = (amount: number) => padding + chartHeight - (amount / maxAmount) * chartHeight;
-  
-  const points = trendData.map((item, index) => ({
-    x: getX(index),
-    y: getY(item.amount),
-    ...item
-  }));
-  
-  const pathData = points.map((point, index) => 
-    `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`
-  ).join(' ');
-  
-  const areaData = `${pathData} L ${points[points.length - 1].x} ${getY(0)} L ${points[0].x} ${getY(0)} Z`;
 
   // Calculate trend
   const firstHalf = trendData.slice(0, Math.floor(trendData.length / 2));
@@ -117,153 +107,150 @@ export const SpendingTrendChart: React.FC<SpendingTrendChartProps> = ({
   const trendPercentage = firstHalfAvg > 0 ? Math.abs((secondHalfAvg - firstHalfAvg) / firstHalfAvg * 100) : 0;
 
   return (
-    <div className="space-y-4">
+    <div className="w-full space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h3>
-        <div className="flex items-center space-x-4">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">{title}</h3>
+        <div className="flex items-center space-x-4 flex-shrink-0">
           <div className={`flex items-center space-x-1 text-sm ${
             trendDirection === 'up' ? 'text-red-500 dark:text-red-400' : 'text-green-500 dark:text-green-400'
           }`}>
             <span>{trendDirection === 'up' ? '↗' : '↘'}</span>
-            <span>{trendPercentage.toFixed(1)}%</span>
+            <span className="whitespace-nowrap">{trendPercentage.toFixed(1)}%</span>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4 mb-4">
-        <div className="text-center p-3 bg-gray-50 dark:bg-slate-800/50 rounded-xl">
-          <p className="text-sm text-gray-600 dark:text-gray-300">Average</p>
-          <p className="text-lg font-semibold text-gray-900 dark:text-white">
+      <div className="grid grid-cols-3 gap-2 mb-4">
+        <div className="text-center p-2 bg-gray-50 dark:bg-slate-800/50 rounded-lg">
+          <p className="text-xs text-gray-600 dark:text-gray-300">Average</p>
+          <p className="text-sm font-semibold text-gray-900 dark:text-white">
             ${avgAmount.toLocaleString()}
           </p>
         </div>
-        <div className="text-center p-3 bg-gray-50 dark:bg-slate-800/50 rounded-xl">
-          <p className="text-sm text-gray-600 dark:text-gray-300">Highest</p>
-          <p className="text-lg font-semibold text-gray-900 dark:text-white">
+        <div className="text-center p-2 bg-gray-50 dark:bg-slate-800/50 rounded-lg">
+          <p className="text-xs text-gray-600 dark:text-gray-300">Highest</p>
+          <p className="text-sm font-semibold text-gray-900 dark:text-white">
             ${maxAmount.toLocaleString()}
           </p>
         </div>
-        <div className="text-center p-3 bg-gray-50 dark:bg-slate-800/50 rounded-xl">
-          <p className="text-sm text-gray-600 dark:text-gray-300">Total</p>
-          <p className="text-lg font-semibold text-gray-900 dark:text-white">
+        <div className="text-center p-2 bg-gray-50 dark:bg-slate-800/50 rounded-lg">
+          <p className="text-xs text-gray-600 dark:text-gray-300">Total</p>
+          <p className="text-sm font-semibold text-gray-900 dark:text-white">
             ${trendData.reduce((sum, d) => sum + d.amount, 0).toLocaleString()}
           </p>
         </div>
       </div>
 
-      <div className="relative">
-        <svg width={width} height={height} className="overflow-visible">
-          <defs>
-            <linearGradient id="spendingGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#EF4444" stopOpacity="0.3" />
-              <stop offset="100%" stopColor="#EF4444" stopOpacity="0.05" />
-            </linearGradient>
-            
-            <pattern id="spendingGrid" width="30" height="20" patternUnits="userSpaceOnUse">
-              <path d="M 30 0 L 0 0 0 20" fill="none" stroke="rgba(156, 163, 175, 0.2)" strokeWidth="1"/>
-            </pattern>
-          </defs>
-
-          {/* Grid background */}
-          <rect width={width} height={height} fill="url(#spendingGrid)" />
-
-          {/* Average line */}
-          <line
-            x1={padding}
-            y1={getY(avgAmount)}
-            x2={width - padding}
-            y2={getY(avgAmount)}
-            stroke="#F59E0B"
-            strokeWidth="2"
-            strokeDasharray="5,5"
-            opacity="0.7"
-          />
-
-          {/* Area */}
-          <path
-            d={areaData}
-            fill="url(#spendingGradient)"
-          />
-
-          {/* Line */}
-          <path
-            d={pathData}
-            fill="none"
-            stroke="#EF4444"
-            strokeWidth="3"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-
-          {/* Data points */}
-          {points.map((point, index) => (
-            <g key={index}>
-              <circle
-                cx={point.x}
-                cy={point.y}
-                r="5"
-                fill="#EF4444"
-                className="hover:r-7 transition-all duration-300 cursor-pointer"
-              />
-              <circle
-                cx={point.x}
-                cy={point.y}
-                r="2"
-                fill="white"
-              />
+      <div className="w-full overflow-hidden">
+        <div className="w-full" style={{ minWidth: '300px' }}>
+          <svg 
+            width="100%" 
+            height={height} 
+            viewBox={`0 0 400 ${height}`}
+            preserveAspectRatio="xMidYMid meet"
+            className="w-full h-auto"
+          >
+            <defs>
+              <linearGradient id="spendingGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#EF4444" stopOpacity="0.3" />
+                <stop offset="100%" stopColor="#EF4444" stopOpacity="0.05" />
+              </linearGradient>
               
-              {/* Hover tooltip */}
-              <g className="opacity-0 hover:opacity-100 transition-opacity duration-300">
-                <rect
-                  x={point.x - 30}
-                  y={point.y - 35}
-                  width="60"
-                  height="25"
-                  fill="rgba(0,0,0,0.8)"
-                  rx="4"
-                />
-                <text
-                  x={point.x}
-                  y={point.y - 20}
-                  textAnchor="middle"
-                  className="text-xs fill-white"
-                >
-                  ${point.amount.toLocaleString()}
-                </text>
-              </g>
-            </g>
-          ))}
+              <pattern id="spendingGrid" width="30" height="20" patternUnits="userSpaceOnUse">
+                <path d="M 30 0 L 0 0 0 20" fill="none" stroke="rgba(156, 163, 175, 0.2)" strokeWidth="1"/>
+              </pattern>
+            </defs>
 
-          {/* X-axis labels */}
-          {trendData.map((item, index) => (
-            <text
-              key={index}
-              x={getX(index)}
-              y={height - 5}
-              textAnchor="middle"
-              className="text-xs fill-gray-600 dark:fill-gray-400"
-            >
-              {item.period}
-            </text>
-          ))}
+            {/* Grid background */}
+            <rect width="400" height={height} fill="url(#spendingGrid)" />
 
-          {/* Y-axis labels */}
-          {[0, maxAmount * 0.5, maxAmount].map((value, index) => (
-            <text
-              key={index}
-              x={padding - 10}
-              y={getY(value)}
-              textAnchor="end"
-              className="text-xs fill-gray-600 dark:fill-gray-400"
-              dominantBaseline="middle"
-            >
-              ${(value / 1000).toFixed(0)}k
-            </text>
-          ))}
-        </svg>
+            {/* Average line */}
+            <line
+              x1={padding}
+              y1={getY(avgAmount)}
+              x2={400 - padding}
+              y2={getY(avgAmount)}
+              stroke="#F59E0B"
+              strokeWidth="2"
+              strokeDasharray="5,5"
+              opacity="0.7"
+            />
+
+            {/* Generate paths */}
+            {(() => {
+              const points = trendData.map((item, index) => ({
+                x: getX(index, 400),
+                y: getY(item.amount),
+                ...item
+              }));
+              
+              const pathData = points.map((point, index) => 
+                `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`
+              ).join(' ');
+              
+              const areaData = `${pathData} L ${points[points.length - 1].x} ${getY(0)} L ${points[0].x} ${getY(0)} Z`;
+
+              return (
+                <>
+                  {/* Area */}
+                  <path d={areaData} fill="url(#spendingGradient)" />
+
+                  {/* Line */}
+                  <path
+                    d={pathData}
+                    fill="none"
+                    stroke="#EF4444"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+
+                  {/* Data points */}
+                  {points.map((point, index) => (
+                    <circle
+                      key={index}
+                      cx={point.x}
+                      cy={point.y}
+                      r="3"
+                      fill="#EF4444"
+                      className="hover:r-5 transition-all duration-300 cursor-pointer"
+                    />
+                  ))}
+
+                  {/* X-axis labels */}
+                  {trendData.map((item, index) => (
+                    <text
+                      key={index}
+                      x={getX(index, 400)}
+                      y={height - 5}
+                      textAnchor="middle"
+                      className="text-xs fill-gray-600 dark:fill-gray-400"
+                    >
+                      {item.period}
+                    </text>
+                  ))}
+
+                  {/* Y-axis labels */}
+                  {[0, maxAmount * 0.5, maxAmount].map((value, index) => (
+                    <text
+                      key={index}
+                      x={padding - 10}
+                      y={getY(value)}
+                      textAnchor="end"
+                      className="text-xs fill-gray-600 dark:fill-gray-400"
+                      dominantBaseline="middle"
+                    >
+                      ${(value / 1000).toFixed(0)}k
+                    </text>
+                  ))}
+                </>
+              );
+            })()}
+          </svg>
+        </div>
 
         {/* Legend */}
-        <div className="flex items-center justify-center space-x-6 mt-4">
+        <div className="flex items-center justify-center space-x-4 mt-4 flex-wrap">
           <div className="flex items-center space-x-2">
             <div className="w-3 h-3 bg-red-500 rounded-full"></div>
             <span className="text-sm text-gray-600 dark:text-gray-300">Spending</span>

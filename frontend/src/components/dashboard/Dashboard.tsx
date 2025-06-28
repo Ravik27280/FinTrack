@@ -110,20 +110,21 @@ export const Dashboard: React.FC = () => {
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
-        <div>
+        <div className="min-w-0 flex-1">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
-          <p className="text-gray-600 dark:text-gray-300">
+          <p className="text-gray-600 dark:text-gray-300 truncate">
             Welcome back! Here's your financial overview in {currency.name} ({currency.symbol})
           </p>
         </div>
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-3 flex-shrink-0">
           <Button 
             variant="glass" 
             size="sm"
             onClick={() => setIsCurrencySelectorOpen(true)}
           >
             <Settings className="w-4 h-4 mr-2" />
-            {currency.flag} {currency.code}
+            <span className="hidden sm:inline">{currency.flag} {currency.code}</span>
+            <span className="sm:hidden">{currency.flag}</span>
           </Button>
           <Button 
             onClick={() => setIsAddTransactionOpen(true)}
@@ -149,66 +150,77 @@ export const Dashboard: React.FC = () => {
       />
 
       {/* Advanced Charts Section */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-        <Card>
-          <AdvancedLineChart 
-            data={financialTrendData}
-            title="6-Month Financial Trend"
-            showBalance={true}
-          />
-        </Card>
-
-        <Card>
-          <CategoryBreakdownChart 
-            transactions={transactions}
-            type="expense"
-            title="Expense Categories"
-          />
-        </Card>
-      </div>
-
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-        <Card>
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Spending Analysis</h3>
-            <div className="flex items-center space-x-2">
-              {(['week', 'month', 'year'] as const).map((period) => (
-                <button
-                  key={period}
-                  onClick={() => setSelectedPeriod(period)}
-                  className={`px-3 py-1 rounded-lg text-sm font-medium transition-all duration-300 ${
-                    selectedPeriod === period
-                      ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/25'
-                      : 'bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700'
-                  }`}
-                >
-                  {period.charAt(0).toUpperCase() + period.slice(1)}
-                </button>
-              ))}
-            </div>
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <Card className="overflow-hidden">
+          <div className="p-6">
+            <AdvancedLineChart 
+              data={financialTrendData}
+              title="6-Month Financial Trend"
+              showBalance={true}
+              height={250}
+            />
           </div>
-          <SpendingTrendChart 
-            transactions={transactions}
-            period={selectedPeriod}
-            title=""
-          />
         </Card>
 
-        <Card>
-          <MonthlyComparisonChart 
-            transactions={transactions}
-            title="Income vs Expenses"
-          />
+        <Card className="overflow-hidden">
+          <div className="p-6">
+            <CategoryBreakdownChart 
+              transactions={transactions}
+              type="expense"
+              title="Expense Categories"
+            />
+          </div>
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-        <Card className="xl:col-span-2">
-          <CategoryBreakdownChart 
-            transactions={transactions}
-            type="income"
-            title="Income Sources"
-          />
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <Card className="overflow-hidden">
+          <div className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Spending Analysis</h3>
+              <div className="flex items-center space-x-1">
+                {(['week', 'month', 'year'] as const).map((period) => (
+                  <button
+                    key={period}
+                    onClick={() => setSelectedPeriod(period)}
+                    className={`px-2 py-1 rounded-lg text-xs font-medium transition-all duration-300 ${
+                      selectedPeriod === period
+                        ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/25'
+                        : 'bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700'
+                    }`}
+                  >
+                    {period.charAt(0).toUpperCase() + period.slice(1)}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <SpendingTrendChart 
+              transactions={transactions}
+              period={selectedPeriod}
+              title=""
+            />
+          </div>
+        </Card>
+
+        <Card className="overflow-hidden">
+          <div className="p-6">
+            <MonthlyComparisonChart 
+              transactions={transactions}
+              title="Income vs Expenses"
+            />
+          </div>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <Card className="xl:col-span-2 overflow-hidden">
+          <div className="p-6">
+            <CategoryBreakdownChart 
+              transactions={transactions}
+              type="income"
+              title="Income Sources"
+            />
+          </div>
         </Card>
 
         <Card>
@@ -217,13 +229,13 @@ export const Dashboard: React.FC = () => {
             
             <div className="space-y-3">
               <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-500/20 rounded-xl">
-                <div className="flex items-center space-x-3">
-                  <TrendingUp className="w-5 h-5 text-blue-500 dark:text-blue-400" />
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">
+                <div className="flex items-center space-x-3 min-w-0 flex-1">
+                  <TrendingUp className="w-5 h-5 text-blue-500 dark:text-blue-400 flex-shrink-0" />
+                  <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
                     Transactions This Month
                   </span>
                 </div>
-                <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                <span className="text-lg font-bold text-blue-600 dark:text-blue-400 flex-shrink-0">
                   {transactions.filter(t => {
                     const tDate = new Date(t.date);
                     const now = new Date();
@@ -234,37 +246,37 @@ export const Dashboard: React.FC = () => {
               </div>
 
               <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-500/20 rounded-xl">
-                <div className="flex items-center space-x-3">
-                  <BarChart3 className="w-5 h-5 text-green-500 dark:text-green-400" />
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">
+                <div className="flex items-center space-x-3 min-w-0 flex-1">
+                  <BarChart3 className="w-5 h-5 text-green-500 dark:text-green-400 flex-shrink-0" />
+                  <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
                     Avg Daily Spending
                   </span>
                 </div>
-                <span className="text-lg font-bold text-green-600 dark:text-green-400">
+                <span className="text-lg font-bold text-green-600 dark:text-green-400 flex-shrink-0">
                   {formatAmount(totalExpenses / 30)}
                 </span>
               </div>
 
               <div className="flex items-center justify-between p-3 bg-purple-50 dark:bg-purple-500/20 rounded-xl">
-                <div className="flex items-center space-x-3">
-                  <PieChart className="w-5 h-5 text-purple-500 dark:text-purple-400" />
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">
+                <div className="flex items-center space-x-3 min-w-0 flex-1">
+                  <PieChart className="w-5 h-5 text-purple-500 dark:text-purple-400 flex-shrink-0" />
+                  <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
                     Categories Used
                   </span>
                 </div>
-                <span className="text-lg font-bold text-purple-600 dark:text-purple-400">
+                <span className="text-lg font-bold text-purple-600 dark:text-purple-400 flex-shrink-0">
                   {new Set(transactions.map(t => t.category)).size}
                 </span>
               </div>
 
               <div className="flex items-center justify-between p-3 bg-orange-50 dark:bg-orange-500/20 rounded-xl">
-                <div className="flex items-center space-x-3">
-                  <span className="text-lg">💰</span>
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">
+                <div className="flex items-center space-x-3 min-w-0 flex-1">
+                  <span className="text-lg flex-shrink-0">💰</span>
+                  <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
                     Savings Rate
                   </span>
                 </div>
-                <span className="text-lg font-bold text-orange-600 dark:text-orange-400">
+                <span className="text-lg font-bold text-orange-600 dark:text-orange-400 flex-shrink-0">
                   {totalIncome > 0 ? ((totalBalance / totalIncome) * 100).toFixed(1) : '0'}%
                 </span>
               </div>

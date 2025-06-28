@@ -30,10 +30,15 @@ export const CategoryBreakdownChart: React.FC<CategoryBreakdownChartProps> = ({
   
   if (filteredTransactions.length === 0) {
     return (
-      <div className="text-center py-8">
-        <p className="text-gray-500 dark:text-gray-400">
-          No {type} transactions found
-        </p>
+      <div className="w-full">
+        {title && (
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 truncate">{title}</h3>
+        )}
+        <div className="text-center py-8">
+          <p className="text-gray-500 dark:text-gray-400">
+            No {type} transactions found
+          </p>
+        </div>
       </div>
     );
   }
@@ -68,7 +73,7 @@ export const CategoryBreakdownChart: React.FC<CategoryBreakdownChartProps> = ({
     }))
     .sort((a, b) => b.amount - a.amount);
 
-  const size = 200;
+  const size = 180;
   const center = size / 2;
   const radius = size * 0.35;
   
@@ -92,12 +97,12 @@ export const CategoryBreakdownChart: React.FC<CategoryBreakdownChartProps> = ({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="w-full space-y-4">
       {title && (
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h3>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">{title}</h3>
       )}
       
-      <div className="flex flex-col lg:flex-row items-center space-y-6 lg:space-y-0 lg:space-x-8">
+      <div className="flex flex-col lg:flex-row items-center space-y-6 lg:space-y-0 lg:space-x-6">
         {/* Pie Chart */}
         <div className="relative flex-shrink-0">
           <svg width={size} height={size} className="transform -rotate-90 drop-shadow-lg">
@@ -128,46 +133,55 @@ export const CategoryBreakdownChart: React.FC<CategoryBreakdownChartProps> = ({
           
           {/* Center text */}
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <div className="text-xl font-semibold text-gray-900 dark:text-white">
+            <div className="text-lg font-semibold text-gray-900 dark:text-white">
               ${totalAmount.toLocaleString()}
             </div>
-            <div className="text-sm text-gray-500 dark:text-gray-400 capitalize">
+            <div className="text-xs text-gray-500 dark:text-gray-400 capitalize">
               Total {type}
             </div>
           </div>
         </div>
         
         {/* Legend */}
-        <div className="flex-1 space-y-3 max-h-64 overflow-y-auto">
-          {categoryData.map((item, index) => (
-            <div 
-              key={index} 
-              className="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer"
-            >
-              <div className="flex items-center space-x-3">
-                <div 
-                  className="w-4 h-4 rounded-full shadow-lg flex-shrink-0" 
-                  style={{ backgroundColor: item.color }}
-                />
-                <div className="min-w-0">
-                  <div className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                    {item.category}
+        <div className="flex-1 w-full min-w-0">
+          <div className="space-y-2 max-h-48 overflow-y-auto">
+            {categoryData.slice(0, 6).map((item, index) => (
+              <div 
+                key={index} 
+                className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer"
+              >
+                <div className="flex items-center space-x-2 min-w-0 flex-1">
+                  <div 
+                    className="w-3 h-3 rounded-full shadow-sm flex-shrink-0" 
+                    style={{ backgroundColor: item.color }}
+                  />
+                  <div className="min-w-0 flex-1">
+                    <div className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                      {item.category}
+                    </div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                      {item.count} transaction{item.count > 1 ? 's' : ''}
+                    </div>
+                  </div>
+                </div>
+                <div className="text-right flex-shrink-0 ml-2">
+                  <div className="text-sm font-semibold text-gray-900 dark:text-white">
+                    ${item.amount.toLocaleString()}
                   </div>
                   <div className="text-xs text-gray-500 dark:text-gray-400">
-                    {item.count} transaction{item.count > 1 ? 's' : ''}
+                    {item.percentage.toFixed(1)}%
                   </div>
                 </div>
               </div>
-              <div className="text-right flex-shrink-0">
-                <div className="text-sm font-semibold text-gray-900 dark:text-white">
-                  ${item.amount.toLocaleString()}
-                </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">
-                  {item.percentage.toFixed(1)}%
-                </div>
+            ))}
+            {categoryData.length > 6 && (
+              <div className="text-center py-2">
+                <span className="text-xs text-gray-500 dark:text-gray-400">
+                  +{categoryData.length - 6} more categories
+                </span>
               </div>
-            </div>
-          ))}
+            )}
+          </div>
         </div>
       </div>
     </div>
