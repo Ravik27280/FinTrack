@@ -1,18 +1,93 @@
-import React from 'react';
-import { TrendingUp, AlertTriangle, CheckCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Plus, Target, AlertTriangle, CheckCircle, TrendingUp, Settings, Calendar, Filter } from 'lucide-react';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
-import { BudgetItem } from '../../types';
+import { BudgetCard } from './BudgetCard';
+import { BudgetGoalCard } from './BudgetGoalCard';
+import { BudgetAnalyticsChart } from './BudgetAnalyticsChart';
+import { CreateBudgetForm } from '../forms/CreateBudgetForm';
+import { CreateBudgetGoalForm } from '../forms/CreateBudgetGoalForm';
+import { BudgetAlerts } from './BudgetAlerts';
+import { useCurrency } from '../settings/CurrencySelector';
+import { 
+  Budget, 
+  BudgetGoal, 
+  BudgetAnalytics,
+  getBudgets, 
+  getBudgetGoals, 
+  getBudgetAnalytics,
+  deleteBudget,
+  deleteBudgetGoal
+} from '../services/budgetService';
 
-interface BudgetOverviewProps {
-  budgetItems: BudgetItem[];
-}
+export const BudgetOverview: React.FC = () => {
+  const [budgets, setBudgets] = useState<Budget[]>([]);
+  const [goals, setGoals] = useState<BudgetGoal[]>([]);
+  const [analytics, setAnalytics] = useState<BudgetAnalytics | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<'budgets' | 'goals' | 'analytics'>('budgets');
+  const [isCreateBudgetOpen, setIsCreateBudgetOpen] = useState(false);
+  const [isCreateGoalOpen, setIsCreateGoalOpen] = useState(false);
+  const [filterPeriod, setFilterPeriod] = useState<'all' | 'weekly' | 'monthly' | 'quarterly' | 'yearly'>('all');
+  const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'completed' | 'paused'>('all');
+  
+  const { formatAmount } = useCurrency();
 
-export const BudgetOverview: React.FC<BudgetOverviewProps> = ({ budgetItems }) => {
-  const getBudgetStatus = (spent: number, budgeted: number) => {
+  const fetchData = async () => {
+    try {
+      setIsLoading(true);
+      const [budgetsData, goalsData, analyticsData] = await Promise.all([
+        getBudgets(),
+        getBudgetGoals(),
+        getBudgetAnalytics()
+      ]);
+      
+      setBudgets(budgetsData);
+      setGoals(goalsData);
+      setAnalytics(analyticsData);
+    } catch (error) {
+      console.error('Error fetching budget data:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const handleDeleteBudget = async (id: string) => {
+    try {
+      await deleteBudget(id);
+      fetchData();
+    } catch (error) {
+      console.error('Error deleting budget:', error);
+    }
+  };
+
+  const handleDeleteGoal = async (id: string) => {
+    try {
+      await deleteBudgetGoal(id);
+      fetchData();
+    } catch (error) {
+      console.error('Error deleting goal:', error);
+    }
+  };
+
+  const filteredBudgets = budgets.filter(budget => {
+    if (filterPeriod !== 'all' && budget.period !== filterPeriod) return false;
+    return true;
+  });
+
+  const filteredGoals = goals.filter(goal => {
+    if (filterStatus !== 'all' && goal.status !== filterStatus) return false;
+    return true;
+  });
+
+  const getBudgetStatus = (spent: number, budgeted: number, threshold: number) => {
     const percentage = (spent / budgeted) * 100;
     if (percentage >= 100) return 'over';
-    if (percentage >= 80) return 'warning';
+    if (percentage >= threshold) return 'warning';
     return 'good';
   };
 
@@ -27,108 +102,256 @@ export const BudgetOverview: React.FC<BudgetOverviewProps> = ({ budgetItems }) =
     }
   };
 
-  const totalBudgeted = budgetItems.reduce((sum, item) => sum + item.budgeted, 0);
-  const totalSpent = budgetItems.reduce((sum, item) => sum + item.spent, 0);
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Budget Management</h1>
+            <p className="text-gray-600 dark:text-gray-300">Loading your budget overview...</p>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl border border-gray-200/50 dark:border-slate-700/50 rounded-2xl p-6 animate-pulse">
+              <div className="h-4 bg-gray-200 dark:bg-slate-700 rounded w-1/2 mb-2"></div>
+              <div className="h-8 bg-gray-200 dark:bg-slate-700 rounded w-3/4"></div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Budget Overview</h1>
-          <p className="text-gray-600 dark:text-gray-300">Track your spending against your budget goals.</p>
+        <div className="min-w-0 flex-1">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Budget Management</h1>
+          <p className="text-gray-600 dark:text-gray-300 truncate">
+            Track your spending, set goals, and manage your financial health.
+          </p>
         </div>
-        <Button>Add Category</Button>
+        <div className="flex items-center space-x-3 flex-shrink-0">
+          <Button 
+            variant="glass" 
+            size="sm"
+            onClick={() => setIsCreateGoalOpen(true)}
+          >
+            <Target className="w-4 h-4 mr-2" />
+            <span className="hidden sm:inline">Add Goal</span>
+          </Button>
+          <Button onClick={() => setIsCreateBudgetOpen(true)}>
+            <Plus className="w-4 h-4 mr-2" />
+            <span className="hidden sm:inline">Create Budget</span>
+          </Button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
-          <div className="text-center">
-            <p className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">Total Budgeted</p>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white">${totalBudgeted.toLocaleString()}</p>
-          </div>
-        </Card>
-        <Card>
-          <div className="text-center">
-            <p className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">Total Spent</p>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white">${totalSpent.toLocaleString()}</p>
-          </div>
-        </Card>
-        <Card>
-          <div className="text-center">
-            <p className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">Remaining</p>
-            <p className={`text-2xl font-bold ${
-              totalBudgeted - totalSpent >= 0 ? 'text-green-500 dark:text-green-400' : 'text-red-500 dark:text-red-400'
-            }`}>
-              ${Math.abs(totalBudgeted - totalSpent).toLocaleString()}
-            </p>
-          </div>
-        </Card>
+      {/* Quick Stats */}
+      {analytics && (
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <Card className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Budgeted</p>
+                <p className="text-xl font-bold text-gray-900 dark:text-white">
+                  {formatAmount(analytics.totalBudgeted)}
+                </p>
+              </div>
+              <div className="w-10 h-10 bg-blue-50 dark:bg-blue-500/20 rounded-xl flex items-center justify-center">
+                <Target className="w-5 h-5 text-blue-500 dark:text-blue-400" />
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Spent</p>
+                <p className="text-xl font-bold text-gray-900 dark:text-white">
+                  {formatAmount(analytics.totalSpent)}
+                </p>
+              </div>
+              <div className="w-10 h-10 bg-red-50 dark:bg-red-500/20 rounded-xl flex items-center justify-center">
+                <TrendingUp className="w-5 h-5 text-red-500 dark:text-red-400" />
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Over Budget</p>
+                <p className="text-xl font-bold text-red-600 dark:text-red-400">
+                  {analytics.budgetsOverLimit}
+                </p>
+              </div>
+              <div className="w-10 h-10 bg-red-50 dark:bg-red-500/20 rounded-xl flex items-center justify-center">
+                <AlertTriangle className="w-5 h-5 text-red-500 dark:text-red-400" />
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Near Limit</p>
+                <p className="text-xl font-bold text-yellow-600 dark:text-yellow-400">
+                  {analytics.budgetsNearLimit}
+                </p>
+              </div>
+              <div className="w-10 h-10 bg-yellow-50 dark:bg-yellow-500/20 rounded-xl flex items-center justify-center">
+                <TrendingUp className="w-5 h-5 text-yellow-500 dark:text-yellow-400" />
+              </div>
+            </div>
+          </Card>
+        </div>
+      )}
+
+      {/* Budget Alerts */}
+      <BudgetAlerts budgets={budgets} formatAmount={formatAmount} />
+
+      {/* Tab Navigation */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-1 bg-gray-100 dark:bg-slate-800 rounded-xl p-1">
+          {[
+            { id: 'budgets', label: 'Budgets', icon: Target },
+            { id: 'goals', label: 'Goals', icon: CheckCircle },
+            { id: 'analytics', label: 'Analytics', icon: TrendingUp }
+          ].map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+                  activeTab === tab.id
+                    ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm'
+                    : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                <span className="hidden sm:inline">{tab.label}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Filters */}
+        <div className="flex items-center space-x-2">
+          {activeTab === 'budgets' && (
+            <select
+              value={filterPeriod}
+              onChange={(e) => setFilterPeriod(e.target.value as any)}
+              className="px-3 py-2 border border-gray-300/50 dark:border-slate-600/50 rounded-xl bg-white/50 dark:bg-slate-800/50 backdrop-blur-md text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50"
+            >
+              <option value="all">All Periods</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+              <option value="quarterly">Quarterly</option>
+              <option value="yearly">Yearly</option>
+            </select>
+          )}
+
+          {activeTab === 'goals' && (
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value as any)}
+              className="px-3 py-2 border border-gray-300/50 dark:border-slate-600/50 rounded-xl bg-white/50 dark:bg-slate-800/50 backdrop-blur-md text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50"
+            >
+              <option value="all">All Status</option>
+              <option value="active">Active</option>
+              <option value="completed">Completed</option>
+              <option value="paused">Paused</option>
+            </select>
+          )}
+
+          <Button variant="glass" size="sm">
+            <Filter className="w-4 h-4 mr-2" />
+            <span className="hidden sm:inline">Filter</span>
+          </Button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {budgetItems.map((item) => {
-          const percentage = Math.min((item.spent / item.budgeted) * 100, 100);
-          const status = getBudgetStatus(item.spent, item.budgeted);
+      {/* Tab Content */}
+      {activeTab === 'budgets' && (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {filteredBudgets.map((budget) => (
+            <BudgetCard
+              key={budget._id || budget.id}
+              budget={budget}
+              onEdit={() => {/* TODO: Implement edit */}}
+              onDelete={() => handleDeleteBudget(budget._id || budget.id || '')}
+              formatAmount={formatAmount}
+            />
+          ))}
           
-          return (
-            <Card key={item.id} className="hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center space-x-3">
-                  <div 
-                    className="w-4 h-4 rounded-full shadow-lg" 
-                    style={{ backgroundColor: item.color }}
-                  />
-                  <h3 className="font-semibold text-gray-900 dark:text-white">{item.category}</h3>
-                </div>
-                {getStatusIcon(status)}
-              </div>
-              
-              <div className="space-y-3">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600 dark:text-gray-300">Spent</span>
-                  <span className="font-medium text-gray-900 dark:text-white">${item.spent.toLocaleString()}</span>
-                </div>
-                
-                <div className="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-2 backdrop-blur-md">
-                  <div
-                    className={`h-2 rounded-full transition-all duration-300 ${
-                      status === 'over' ? 'bg-red-500' :
-                      status === 'warning' ? 'bg-yellow-500' : 'bg-green-500'
-                    }`}
-                    style={{ width: `${percentage}%` }}
-                  />
-                </div>
-                
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600 dark:text-gray-300">Budget</span>
-                  <span className="font-medium text-gray-900 dark:text-white">${item.budgeted.toLocaleString()}</span>
-                </div>
-                
-                <div className="flex justify-between items-center pt-2">
-                  <span className={`text-sm font-medium ${
-                    status === 'over' ? 'text-red-500 dark:text-red-400' :
-                    status === 'warning' ? 'text-yellow-500 dark:text-yellow-400' : 'text-green-500 dark:text-green-400'
-                  }`}>
-                    {percentage.toFixed(1)}% used
-                  </span>
-                  <span className="text-sm text-gray-600 dark:text-gray-400">
-                    ${(item.budgeted - item.spent).toLocaleString()} remaining
-                  </span>
-                </div>
-              </div>
-              
-              <div className="flex space-x-2 mt-4">
-                <Button variant="glass" size="sm" className="flex-1">
-                  Adjust Budget
+          {filteredBudgets.length === 0 && (
+            <div className="col-span-full">
+              <Card className="text-center py-12">
+                <Target className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No budgets found</h3>
+                <p className="text-gray-600 dark:text-gray-300 mb-4">
+                  Create your first budget to start tracking your spending.
+                </p>
+                <Button onClick={() => setIsCreateBudgetOpen(true)}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create Budget
                 </Button>
-                <Button variant="ghost" size="sm" className="flex-1">
-                  View Details
+              </Card>
+            </div>
+          )}
+        </div>
+      )}
+
+      {activeTab === 'goals' && (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {filteredGoals.map((goal) => (
+            <BudgetGoalCard
+              key={goal._id || goal.id}
+              goal={goal}
+              onEdit={() => {/* TODO: Implement edit */}}
+              onDelete={() => handleDeleteGoal(goal._id || goal.id || '')}
+              formatAmount={formatAmount}
+            />
+          ))}
+          
+          {filteredGoals.length === 0 && (
+            <div className="col-span-full">
+              <Card className="text-center py-12">
+                <CheckCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No goals found</h3>
+                <p className="text-gray-600 dark:text-gray-300 mb-4">
+                  Set your first financial goal to start saving.
+                </p>
+                <Button onClick={() => setIsCreateGoalOpen(true)}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create Goal
                 </Button>
-              </div>
-            </Card>
-          );
-        })}
-      </div>
+              </Card>
+            </div>
+          )}
+        </div>
+      )}
+
+      {activeTab === 'analytics' && analytics && (
+        <BudgetAnalyticsChart analytics={analytics} formatAmount={formatAmount} />
+      )}
+
+      {/* Forms */}
+      <CreateBudgetForm
+        isOpen={isCreateBudgetOpen}
+        onClose={() => setIsCreateBudgetOpen(false)}
+        onSuccess={fetchData}
+      />
+
+      <CreateBudgetGoalForm
+        isOpen={isCreateGoalOpen}
+        onClose={() => setIsCreateGoalOpen(false)}
+        onSuccess={fetchData}
+      />
     </div>
   );
 };

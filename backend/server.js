@@ -7,6 +7,7 @@ dotenv.config();
 
 const authRoutes = require("./routes/authRoutes");
 const transactionRoutes = require("./routes/transactionRoutes");
+const budgetRoutes = require("./routes/budgetRoutes");
 
 const app =express();
 
@@ -16,6 +17,7 @@ app.use(express.json());
 //routes
 app.use("/api/auth", authRoutes);
 app.use("/api/transactions", transactionRoutes);
+app.use("/api/budgets", budgetRoutes);
 
 mongoose.connect(process.env.MONGO_URI).then(()=>{
     console.log("MongoDB connected successfully");
