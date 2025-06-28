@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, 
@@ -33,10 +33,30 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'insights', label: 'AI Insights', icon: Brain, path: '/insights' }
   ];
 
+  // Get user data from localStorage
+  const getUserData = () => {
+    try {
+      const userData = localStorage.getItem('user');
+      return userData ? JSON.parse(userData) : null;
+    } catch (error) {
+      console.error('Error parsing user data:', error);
+      return null;
+    }
+  };
+
+  const user = getUserData();
+
   const handleLogout = () => {
     onLogout();
     navigate('/login');
   };
+
+  // Redirect to dashboard if on root path
+  useEffect(() => {
+    if (location.pathname === '/') {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [location.pathname, navigate]);
 
   return (
     <div className={`
@@ -131,15 +151,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* User Profile */}
-        {!isCollapsed && (
+        {!isCollapsed && user && (
           <div className="p-3 rounded-xl bg-gray-50/80 dark:bg-slate-800/80 border border-gray-200/50 dark:border-slate-700/50 backdrop-blur-md">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg">
-                <span className="text-sm font-bold text-white">JD</span>
+                <span className="text-sm font-bold text-white">
+                  {user.name ? user.name.split(' ').map((n: string) => n[0]).join('').toUpperCase() : 'U'}
+                </span>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">John Doe</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">john@example.com</p>
+                <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                  {user.name || 'User'}
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                  {user.email || 'user@example.com'}
+                </p>
               </div>
             </div>
           </div>

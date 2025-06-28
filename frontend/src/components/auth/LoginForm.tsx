@@ -8,7 +8,7 @@ import { ThemeToggle } from '../ui/ThemeToggle';
 import { login } from '../services/authService';
 
 interface LoginFormProps {
-  onLogin: (email: string, password: string) => void;
+  onLogin: (email: string, password: string, userData?: any) => void;
   onSwitchToRegister: () => void;
 }
 
@@ -17,6 +17,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onSwitchToRegiste
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
 
   const validateForm = () => {
@@ -42,14 +43,19 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onSwitchToRegiste
     e.preventDefault();
 
     if (validateForm()) {
+      setIsLoading(true);
       try {
         const res = await login(email, password);
         localStorage.setItem('token', res.token);
-        onLogin(res.email, password);
+        onLogin(email, password, res.user);
         navigate('/dashboard');
       } catch (err: any) {
         console.error(err);
-        alert(err.response?.data?.error || 'Login failed');
+        setErrors({ 
+          email: err.response?.data?.error || 'Login failed. Please check your credentials.' 
+        });
+      } finally {
+        setIsLoading(false);
       }
     }
   };
@@ -87,6 +93,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onSwitchToRegiste
               placeholder="Enter your email"
               icon={<Mail className="w-5 h-5 text-gray-400" />}
               error={errors.email}
+              disabled={isLoading}
             />
 
             <div className="relative">
@@ -98,11 +105,13 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onSwitchToRegiste
                 placeholder="Enter your password"
                 icon={<Lock className="w-5 h-5 text-gray-400" />}
                 error={errors.password}
+                disabled={isLoading}
               />
               <button
                 type="button"
-                className="absolute right-3 top-9 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                className="absolute right-3 top-9 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors disabled:opacity-50"
                 onClick={() => setShowPassword(!showPassword)}
+                disabled={isLoading}
               >
                 {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
@@ -110,7 +119,11 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onSwitchToRegiste
 
             <div className="flex items-center justify-between">
               <label className="flex items-center">
-                <input type="checkbox" className="rounded border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-blue-600 focus:ring-blue-500/50 focus:ring-offset-0" />
+                <input 
+                  type="checkbox" 
+                  className="rounded border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-blue-600 focus:ring-blue-500/50 focus:ring-offset-0" 
+                  disabled={isLoading}
+                />
                 <span className="ml-2 text-sm text-gray-600 dark:text-gray-300">Remember me</span>
               </label>
               <a href="#" className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
@@ -118,8 +131,8 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onSwitchToRegiste
               </a>
             </div>
 
-            <Button type="submit" className="w-full" size="lg">
-              Sign in
+            <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+              {isLoading ? 'Signing in...' : 'Sign in'}
             </Button>
 
             <div className="relative">
@@ -132,8 +145,8 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onSwitchToRegiste
             </div>
 
             <div className="grid grid-cols-2 gap-3">
-              <Button variant="glass" className="w-full">Google</Button>
-              <Button variant="glass" className="w-full">Apple</Button>
+              <Button variant="glass" className="w-full" disabled={isLoading}>Google</Button>
+              <Button variant="glass" className="w-full" disabled={isLoading}>Apple</Button>
             </div>
           </Card>
 
@@ -142,7 +155,8 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onSwitchToRegiste
             <button
               type="button"
               onClick={() => navigate('/register')}
-              className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors"
+              className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors disabled:opacity-50"
+              disabled={isLoading}
             >
               Sign up
             </button>
