@@ -15,11 +15,11 @@ app.use(express.json());
 
 //routes
 app.use("/api/auth", authRoutes);
-app.use("api/transactions", transactionRoutes);
+app.use("/api/transactions", transactionRoutes);
 
 mongoose.connect(process.env.MONGO_URI).then(()=>{
-    console.loga("MongoDB connected successfully");
-    app.listeb(process.env.PORT || 5000, ()=>
+    console.log("MongoDB connected successfully");
+    app.listen(process.env.PORT || 5000, () =>
         console.log("Server running on port", process.env.PORT || 5000)
     );
 }).catch((err) => {
