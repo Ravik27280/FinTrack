@@ -22,10 +22,10 @@ export const BudgetAnalyticsChart: React.FC<BudgetAnalyticsChartProps> = ({
     .map(([category, data]) => ({ category, ...data }))
     .sort((a, b) => b.spent - a.spent);
 
-  const height = 250;
-  const padding = 50;
+  const height = 200;
+  const padding = 40;
   const chartHeight = height - padding * 2;
-  const barWidth = 30;
+  const barWidth = 25;
 
   const getY = (value: number) => {
     return padding + chartHeight - (value / maxValue) * chartHeight;
@@ -35,99 +35,101 @@ export const BudgetAnalyticsChart: React.FC<BudgetAnalyticsChartProps> = ({
     const usableWidth = totalWidth - padding * 2;
     const groupWidth = usableWidth / monthlyTrend.length;
     const groupCenter = padding + (index * groupWidth) + (groupWidth / 2);
-    return groupCenter + (barIndex - 0.5) * (barWidth + 5);
+    return groupCenter + (barIndex - 0.5) * (barWidth + 3);
   };
 
   return (
     <div className="space-y-6">
       {/* Monthly Trend Chart */}
-      <Card>
+      <Card className="p-6">
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Budget vs Spending Trend</h3>
           
-          <div className="w-full overflow-hidden">
-            <div className="w-full" style={{ minWidth: '500px' }}>
-              <svg 
-                width="100%" 
-                height={height} 
-                viewBox={`0 0 600 ${height}`}
-                preserveAspectRatio="xMidYMid meet"
-                className="w-full h-auto"
-              >
-                <defs>
-                  <linearGradient id="budgetBarGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="#3B82F6" />
-                    <stop offset="100%" stopColor="#1D4ED8" />
-                  </linearGradient>
-                  <linearGradient id="spentBarGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="#EF4444" />
-                    <stop offset="100%" stopColor="#DC2626" />
-                  </linearGradient>
-                  
-                  <pattern id="budgetGrid" width="40" height="30" patternUnits="userSpaceOnUse">
-                    <path d="M 40 0 L 0 0 0 30" fill="none" stroke="rgba(156, 163, 175, 0.2)" strokeWidth="1"/>
-                  </pattern>
-                </defs>
+          <div className="w-full">
+            <div className="w-full overflow-x-auto">
+              <div style={{ minWidth: '500px', width: '100%' }}>
+                <svg 
+                  width="100%" 
+                  height={height} 
+                  viewBox={`0 0 500 ${height}`}
+                  preserveAspectRatio="xMidYMid meet"
+                  className="w-full"
+                >
+                  <defs>
+                    <linearGradient id="budgetBarGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stopColor="#3B82F6" />
+                      <stop offset="100%" stopColor="#1D4ED8" />
+                    </linearGradient>
+                    <linearGradient id="spentBarGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stopColor="#EF4444" />
+                      <stop offset="100%" stopColor="#DC2626" />
+                    </linearGradient>
+                    
+                    <pattern id="budgetGrid" width="40" height="20" patternUnits="userSpaceOnUse">
+                      <path d="M 40 0 L 0 0 0 20" fill="none" stroke="rgba(156, 163, 175, 0.2)" strokeWidth="1"/>
+                    </pattern>
+                  </defs>
 
-                {/* Grid background */}
-                <rect width="600" height={height} fill="url(#budgetGrid)" />
+                  {/* Grid background */}
+                  <rect width="500" height={height} fill="url(#budgetGrid)" />
 
-                {/* Bars */}
-                {monthlyTrend.map((data, index) => {
-                  const budgetHeight = (data.budgeted / maxValue) * chartHeight;
-                  const spentHeight = (data.spent / maxValue) * chartHeight;
-                  
-                  return (
-                    <g key={index}>
-                      {/* Budget bar */}
-                      <rect
-                        x={getX(index, 0, 600)}
-                        y={getY(data.budgeted)}
-                        width={barWidth}
-                        height={budgetHeight}
-                        fill="url(#budgetBarGradient)"
-                        rx="4"
-                        className="hover:opacity-80 transition-opacity duration-300 cursor-pointer"
-                      />
-                      
-                      {/* Spent bar */}
-                      <rect
-                        x={getX(index, 1, 600)}
-                        y={getY(data.spent)}
-                        width={barWidth}
-                        height={spentHeight}
-                        fill="url(#spentBarGradient)"
-                        rx="4"
-                        className="hover:opacity-80 transition-opacity duration-300 cursor-pointer"
-                      />
-                      
-                      {/* Month label */}
-                      <text
-                        x={getX(index, 0.5, 600) + barWidth / 2}
-                        y={height - 10}
-                        textAnchor="middle"
-                        className="text-sm fill-gray-700 dark:fill-gray-300 font-medium"
-                      >
-                        {data.month}
-                      </text>
-                    </g>
-                  );
-                })}
+                  {/* Bars */}
+                  {monthlyTrend.map((data, index) => {
+                    const budgetHeight = (data.budgeted / maxValue) * chartHeight;
+                    const spentHeight = (data.spent / maxValue) * chartHeight;
+                    
+                    return (
+                      <g key={index}>
+                        {/* Budget bar */}
+                        <rect
+                          x={getX(index, 0, 500)}
+                          y={getY(data.budgeted)}
+                          width={barWidth}
+                          height={budgetHeight}
+                          fill="url(#budgetBarGradient)"
+                          rx="3"
+                          className="hover:opacity-80 transition-opacity duration-300 cursor-pointer"
+                        />
+                        
+                        {/* Spent bar */}
+                        <rect
+                          x={getX(index, 1, 500)}
+                          y={getY(data.spent)}
+                          width={barWidth}
+                          height={spentHeight}
+                          fill="url(#spentBarGradient)"
+                          rx="3"
+                          className="hover:opacity-80 transition-opacity duration-300 cursor-pointer"
+                        />
+                        
+                        {/* Month label */}
+                        <text
+                          x={getX(index, 0.5, 500) + barWidth / 2}
+                          y={height - 10}
+                          textAnchor="middle"
+                          className="text-xs fill-gray-700 dark:fill-gray-300 font-medium"
+                        >
+                          {data.month}
+                        </text>
+                      </g>
+                    );
+                  })}
 
-                {/* Y-axis labels */}
-                {[0, maxValue * 0.25, maxValue * 0.5, maxValue * 0.75, maxValue].map((value, index) => (
-                  <text
-                    key={index}
-                    x={padding - 10}
-                    y={getY(value)}
-                    textAnchor="end"
-                    className="text-xs fill-gray-600 dark:fill-gray-400"
-                    dominantBaseline="middle"
-                  >
-                    ${(value / 1000).toFixed(0)}k
-                  </text>
-                ))}
-              </svg>
+                  {/* Y-axis labels */}
+                  {[0, maxValue * 0.5, maxValue].map((value, index) => (
+                    <text
+                      key={index}
+                      x={padding - 10}
+                      y={getY(value)}
+                      textAnchor="end"
+                      className="text-xs fill-gray-600 dark:fill-gray-400"
+                      dominantBaseline="middle"
+                    >
+                      ${(value / 1000).toFixed(0)}k
+                    </text>
+                  ))}
+                </svg>
+              </div>
             </div>
 
             {/* Legend */}
@@ -145,9 +147,9 @@ export const BudgetAnalyticsChart: React.FC<BudgetAnalyticsChartProps> = ({
         </div>
       </Card>
 
-      {/* Category Breakdown */}
+      {/* Category Breakdown and Summary */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
+        <Card className="p-6">
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Category Performance</h3>
             
@@ -155,7 +157,7 @@ export const BudgetAnalyticsChart: React.FC<BudgetAnalyticsChartProps> = ({
               {categoryData.map((category, index) => (
                 <div key={category.category} className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-900 dark:text-white">
+                    <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
                       {category.category}
                     </span>
                     <span className={`text-sm font-semibold ${
@@ -188,7 +190,7 @@ export const BudgetAnalyticsChart: React.FC<BudgetAnalyticsChartProps> = ({
           </div>
         </Card>
 
-        <Card>
+        <Card className="p-6">
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Budget Summary</h3>
             
@@ -196,7 +198,7 @@ export const BudgetAnalyticsChart: React.FC<BudgetAnalyticsChartProps> = ({
               <div className="text-center p-4 bg-blue-50 dark:bg-blue-500/20 rounded-xl">
                 <DollarSign className="w-8 h-8 text-blue-500 dark:text-blue-400 mx-auto mb-2" />
                 <p className="text-sm text-blue-600 dark:text-blue-400">Total Budgeted</p>
-                <p className="text-xl font-bold text-blue-700 dark:text-blue-300">
+                <p className="text-lg font-bold text-blue-700 dark:text-blue-300">
                   {formatAmount(analytics.totalBudgeted)}
                 </p>
               </div>
@@ -204,7 +206,7 @@ export const BudgetAnalyticsChart: React.FC<BudgetAnalyticsChartProps> = ({
               <div className="text-center p-4 bg-red-50 dark:bg-red-500/20 rounded-xl">
                 <TrendingUp className="w-8 h-8 text-red-500 dark:text-red-400 mx-auto mb-2" />
                 <p className="text-sm text-red-600 dark:text-red-400">Total Spent</p>
-                <p className="text-xl font-bold text-red-700 dark:text-red-300">
+                <p className="text-lg font-bold text-red-700 dark:text-red-300">
                   {formatAmount(analytics.totalSpent)}
                 </p>
               </div>
@@ -212,7 +214,7 @@ export const BudgetAnalyticsChart: React.FC<BudgetAnalyticsChartProps> = ({
               <div className="text-center p-4 bg-green-50 dark:bg-green-500/20 rounded-xl">
                 <Target className="w-8 h-8 text-green-500 dark:text-green-400 mx-auto mb-2" />
                 <p className="text-sm text-green-600 dark:text-green-400">Remaining</p>
-                <p className="text-xl font-bold text-green-700 dark:text-green-300">
+                <p className="text-lg font-bold text-green-700 dark:text-green-300">
                   {formatAmount(analytics.totalBudgeted - analytics.totalSpent)}
                 </p>
               </div>
@@ -220,7 +222,7 @@ export const BudgetAnalyticsChart: React.FC<BudgetAnalyticsChartProps> = ({
               <div className="text-center p-4 bg-purple-50 dark:bg-purple-500/20 rounded-xl">
                 <TrendingDown className="w-8 h-8 text-purple-500 dark:text-purple-400 mx-auto mb-2" />
                 <p className="text-sm text-purple-600 dark:text-purple-400">Savings Rate</p>
-                <p className="text-xl font-bold text-purple-700 dark:text-purple-300">
+                <p className="text-lg font-bold text-purple-700 dark:text-purple-300">
                   {analytics.totalBudgeted > 0 
                     ? (((analytics.totalBudgeted - analytics.totalSpent) / analytics.totalBudgeted) * 100).toFixed(1)
                     : '0'
