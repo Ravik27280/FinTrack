@@ -5,7 +5,8 @@ export const register = async (formData) => {
   return res.data;
 };
 
-export const login = async (formData) => {
+export const login = async (email, password) => {
+  const formData = { email, password };
   const res = await api.post("/auth/login", formData);
   // Save token
   localStorage.setItem("token", res.data.token);
