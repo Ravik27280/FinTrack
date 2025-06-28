@@ -4,6 +4,7 @@ import { Card } from '../ui/Card';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
 import { AddTransactionForm } from '../forms/AddTransactionForm';
+import { EditTransactionForm } from '../forms/EditTransactionForm';
 import { Transaction, getTransactions, deleteTransaction } from '../services/transactionService';
 
 export const TransactionTable: React.FC = () => {
@@ -15,6 +16,8 @@ export const TransactionTable: React.FC = () => {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [selectedTransactions, setSelectedTransactions] = useState<string[]>([]);
   const [isAddTransactionOpen, setIsAddTransactionOpen] = useState(false);
+  const [isEditTransactionOpen, setIsEditTransactionOpen] = useState(false);
+  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
 
   const fetchTransactions = async () => {
     try {
@@ -101,6 +104,20 @@ export const TransactionTable: React.FC = () => {
       fetchTransactions();
     } catch (error) {
       console.error('Error deleting transactions:', error);
+    }
+  };
+
+  const handleEditTransaction = (transaction: Transaction) => {
+    setEditingTransaction(transaction);
+    setIsEditTransactionOpen(true);
+  };
+
+  const handleDeleteTransaction = async (id: string) => {
+    try {
+      await deleteTransaction(id);
+      fetchTransactions();
+    } catch (error) {
+      console.error('Error deleting transaction:', error);
     }
   };
 
@@ -276,12 +293,17 @@ export const TransactionTable: React.FC = () => {
                     </td>
                     <td className="py-4 px-4">
                       <div className="flex items-center space-x-2">
-                        <button className="p-1 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
+                        <button 
+                          onClick={() => handleEditTransaction(transaction)}
+                          className="p-1 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                          title="Edit transaction"
+                        >
                           <Edit3 className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                         </button>
                         <button 
-                          onClick={() => deleteTransaction(transactionId).then(() => fetchTransactions())}
+                          onClick={() => handleDeleteTransaction(transactionId)}
                           className="p-1 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                          title="Delete transaction"
                         >
                           <Trash2 className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                         </button>
@@ -323,12 +345,17 @@ export const TransactionTable: React.FC = () => {
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <button className="p-1 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
+                    <button 
+                      onClick={() => handleEditTransaction(transaction)}
+                      className="p-1 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                      title="Edit transaction"
+                    >
                       <Edit3 className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                     </button>
                     <button 
-                      onClick={() => deleteTransaction(transactionId).then(() => fetchTransactions())}
+                      onClick={() => handleDeleteTransaction(transactionId)}
                       className="p-1 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                      title="Delete transaction"
                     >
                       <Trash2 className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                     </button>
@@ -360,6 +387,16 @@ export const TransactionTable: React.FC = () => {
         isOpen={isAddTransactionOpen}
         onClose={() => setIsAddTransactionOpen(false)}
         onSuccess={handleTransactionSuccess}
+      />
+
+      <EditTransactionForm
+        isOpen={isEditTransactionOpen}
+        onClose={() => {
+          setIsEditTransactionOpen(false);
+          setEditingTransaction(null);
+        }}
+        onSuccess={handleTransactionSuccess}
+        transaction={editingTransaction}
       />
     </div>
   );
