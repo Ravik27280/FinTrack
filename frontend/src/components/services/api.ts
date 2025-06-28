@@ -3,7 +3,7 @@ import axios, { InternalAxiosRequestConfig } from "axios";
 const API = import.meta.env.VITE_API_BASE_URL;
 
 const instance = axios.create({
-  baseURL: API,
+  baseURL: `${API}/api`,
 });
 
 // Add auth token to headers if exists
