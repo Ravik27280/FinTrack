@@ -11,6 +11,7 @@ import { CategoryBreakdownChart } from '../charts/CategoryBreakdownChart';
 import { SpendingTrendChart } from '../charts/SpendingTrendChart';
 import { MonthlyComparisonChart } from '../charts/MonthlyComparisonChart';
 import { Transaction, getTransactions } from '../services/transactionService';
+import { refreshBudgets } from '../services/budgetService';
 
 export const Dashboard: React.FC = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -80,8 +81,17 @@ export const Dashboard: React.FC = () => {
   
   const totalBalance = totalIncome - totalExpenses;
 
-  const handleTransactionSuccess = () => {
-    fetchTransactions();
+  const handleTransactionSuccess = async () => {
+    console.log('Transaction success - refreshing data...');
+    await fetchTransactions();
+    
+    // Also refresh budgets to update spending calculations
+    try {
+      await refreshBudgets();
+      console.log('Budgets refreshed after transaction success');
+    } catch (error) {
+      console.warn('Failed to refresh budgets:', error);
+    }
   };
 
   if (isLoading) {
