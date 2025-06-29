@@ -5,6 +5,9 @@ import { Button } from '../ui/Button';
 import { BudgetCard } from './BudgetCard';
 import { BudgetGoalCard } from './BudgetGoalCard';
 import { BudgetAnalyticsChart } from './BudgetAnalyticsChart';
+import { BudgetDetailsModal } from './BudgetDetailsModal';
+import { AddProgressModal } from './AddProgressModal';
+import { BudgetFilters } from './BudgetFilters';
 import { CreateBudgetForm } from '../forms/CreateBudgetForm';
 import { CreateBudgetGoalForm } from '../forms/CreateBudgetGoalForm';
 import { EditBudgetForm } from '../forms/EditBudgetForm';
@@ -19,7 +22,8 @@ import {
   getBudgetGoals, 
   getBudgetAnalytics,
   deleteBudget,
-  deleteBudgetGoal
+  deleteBudgetGoal,
+  updateBudgetGoal
 } from '../services/budgetService';
 
 export const BudgetOverview: React.FC = () => {
@@ -28,14 +32,31 @@ export const BudgetOverview: React.FC = () => {
   const [analytics, setAnalytics] = useState<BudgetAnalytics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'budgets' | 'goals' | 'analytics'>('budgets');
+  
+  // Form states
   const [isCreateBudgetOpen, setIsCreateBudgetOpen] = useState(false);
   const [isCreateGoalOpen, setIsCreateGoalOpen] = useState(false);
   const [isEditBudgetOpen, setIsEditBudgetOpen] = useState(false);
   const [isEditGoalOpen, setIsEditGoalOpen] = useState(false);
   const [editingBudget, setEditingBudget] = useState<Budget | null>(null);
   const [editingGoal, setEditingGoal] = useState<BudgetGoal | null>(null);
-  const [filterPeriod, setFilterPeriod] = useState<'all' | 'weekly' | 'monthly' | 'quarterly' | 'yearly'>('all');
-  const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'completed' | 'paused'>('all');
+  
+  // Modal states
+  const [isBudgetDetailsOpen, setIsBudgetDetailsOpen] = useState(false);
+  const [selectedBudget, setSelectedBudget] = useState<Budget | null>(null);
+  const [isAddProgressOpen, setIsAddProgressOpen] = useState(false);
+  const [selectedGoal, setSelectedGoal] = useState<BudgetGoal | null>(null);
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  
+  // Filter states
+  const [filters, setFilters] = useState({
+    period: 'all',
+    status: 'all',
+    category: 'all',
+    sortBy: 'name',
+    sortDirection: 'asc',
+    dateRange: { start: '', end: '' }
+  });
   
   const { formatAmount } = useCurrency();
 
@@ -84,21 +105,116 @@ export const BudgetOverview: React.FC = () => {
     fetchData();
   }, []);
 
+  // Filter and sort budgets
+  const filteredBudgets = budgets
+    .filter(budget => {
+      if (filters.period !== 'all' && budget.period !== filters.period) return false;
+      if (filters.category !== 'all' && budget.category !== filters.category) return false;
+      
+      if (filters.status !== 'all') {
+        const percentage = (budget.spentAmount / budget.budgetedAmount) * 100;
+        if (filters.status === 'over-budget' && percentage < 100) return false;
+        if (filters.status === 'warning' && (percentage < budget.alertThreshold || percentage >= 100)) return false;
+        if (filters.status === 'on-track' && percentage >= budget.alertThreshold) return false;
+      }
+      
+      if (filters.dateRange.start && new Date(budget.startDate) < new Date(filters.dateRange.start)) return false;
+      if (filters.dateRange.end && new Date(budget.endDate) > new Date(filters.dateRange.end)) return false;
+      
+      return true;
+    })
+    .sort((a, b) => {
+      let aValue: any, bValue: any;
+      
+      switch (filters.sortBy) {
+        case 'amount':
+          aValue = a.budgetedAmount;
+          bValue = b.budgetedAmount;
+          break;
+        case 'spent':
+          aValue = a.spentAmount;
+          bValue = b.spentAmount;
+          break;
+        case 'percentage':
+          aValue = (a.spentAmount / a.budgetedAmount) * 100;
+          bValue = (b.spentAmount / b.budgetedAmount) * 100;
+          break;
+        case 'remaining':
+          aValue = a.budgetedAmount - a.spentAmount;
+          bValue = b.budgetedAmount - b.spentAmount;
+          break;
+        case 'endDate':
+          aValue = new Date(a.endDate).getTime();
+          bValue = new Date(b.endDate).getTime();
+          break;
+        default:
+          aValue = a.name.toLowerCase();
+          bValue = b.name.toLowerCase();
+      }
+      
+      if (filters.sortDirection === 'desc') {
+        return aValue < bValue ? 1 : -1;
+      }
+      return aValue > bValue ? 1 : -1;
+    });
+
+  // Filter and sort goals
+  const filteredGoals = goals
+    .filter(goal => {
+      if (filters.status !== 'all' && goal.status !== filters.status) return false;
+      if (filters.category !== 'all' && goal.category !== filters.category) return false;
+      return true;
+    })
+    .sort((a, b) => {
+      let aValue: any, bValue: any;
+      
+      switch (filters.sortBy) {
+        case 'amount':
+          aValue = a.targetAmount;
+          bValue = b.targetAmount;
+          break;
+        case 'percentage':
+          aValue = (a.currentAmount / a.targetAmount) * 100;
+          bValue = (b.currentAmount / b.targetAmount) * 100;
+          break;
+        case 'remaining':
+          aValue = a.targetAmount - a.currentAmount;
+          bValue = b.targetAmount - b.currentAmount;
+          break;
+        case 'endDate':
+          aValue = new Date(a.targetDate).getTime();
+          bValue = new Date(b.targetDate).getTime();
+          break;
+        default:
+          aValue = a.title.toLowerCase();
+          bValue = b.title.toLowerCase();
+      }
+      
+      if (filters.sortDirection === 'desc') {
+        return aValue < bValue ? 1 : -1;
+      }
+      return aValue > bValue ? 1 : -1;
+    });
+
   const handleDeleteBudget = async (id: string) => {
-    try {
-      await deleteBudget(id);
-      fetchData();
-    } catch (error) {
-      console.error('Error deleting budget:', error);
+    if (confirm('Are you sure you want to delete this budget?')) {
+      try {
+        await deleteBudget(id);
+        fetchData();
+      } catch (error) {
+        console.error('Error deleting budget:', error);
+      }
     }
   };
 
   const handleDeleteGoal = async (id: string) => {
-    try {
-      await deleteBudgetGoal(id);
-      fetchData();
-    } catch (error) {
-      console.error('Error deleting goal:', error);
+    if (confirm('Are you sure you want to delete this goal?')) {
+      try {
+        await deleteBudgetGoal(id);
+        fetchData();
+      } catch (error) {
+        console.error('Error deleting goal:', error);
+      }
     }
   };
 
@@ -112,15 +228,50 @@ export const BudgetOverview: React.FC = () => {
     setIsEditGoalOpen(true);
   };
 
-  const filteredBudgets = budgets.filter(budget => {
-    if (filterPeriod !== 'all' && budget.period !== filterPeriod) return false;
-    return true;
-  });
+  const handleViewBudgetDetails = (budget: Budget) => {
+    setSelectedBudget(budget);
+    setIsBudgetDetailsOpen(true);
+  };
 
-  const filteredGoals = goals.filter(goal => {
-    if (filterStatus !== 'all' && goal.status !== filterStatus) return false;
-    return true;
-  });
+  const handleAddProgress = (goal: BudgetGoal) => {
+    setSelectedGoal(goal);
+    setIsAddProgressOpen(true);
+  };
+
+  const handleProgressSubmit = async (amount: number) => {
+    if (!selectedGoal) return;
+    
+    try {
+      const goalId = selectedGoal._id || selectedGoal.id;
+      if (!goalId) throw new Error('Goal ID not found');
+      
+      await updateBudgetGoal(goalId, {
+        currentAmount: selectedGoal.currentAmount + amount
+      });
+      
+      fetchData();
+    } catch (error) {
+      console.error('Error adding progress:', error);
+      throw error;
+    }
+  };
+
+  const handleStatusChange = async (goal: BudgetGoal, status: 'active' | 'completed' | 'paused' | 'cancelled') => {
+    try {
+      const goalId = goal._id || goal.id;
+      if (!goalId) throw new Error('Goal ID not found');
+      
+      await updateBudgetGoal(goalId, { status });
+      fetchData();
+    } catch (error) {
+      console.error('Error updating goal status:', error);
+    }
+  };
+
+  const categories = Array.from(new Set([
+    ...budgets.map(b => b.category),
+    ...goals.map(g => g.category)
+  ]));
 
   if (isLoading) {
     return (
@@ -261,34 +412,7 @@ export const BudgetOverview: React.FC = () => {
 
         {/* Filters */}
         <div className="flex items-center space-x-2">
-          {activeTab === 'budgets' && (
-            <select
-              value={filterPeriod}
-              onChange={(e) => setFilterPeriod(e.target.value as any)}
-              className="px-3 py-2 border border-gray-300/50 dark:border-slate-600/50 rounded-xl bg-white/50 dark:bg-slate-800/50 backdrop-blur-md text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50"
-            >
-              <option value="all">All Periods</option>
-              <option value="weekly">Weekly</option>
-              <option value="monthly">Monthly</option>
-              <option value="quarterly">Quarterly</option>
-              <option value="yearly">Yearly</option>
-            </select>
-          )}
-
-          {activeTab === 'goals' && (
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value as any)}
-              className="px-3 py-2 border border-gray-300/50 dark:border-slate-600/50 rounded-xl bg-white/50 dark:bg-slate-800/50 backdrop-blur-md text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50"
-            >
-              <option value="all">All Status</option>
-              <option value="active">Active</option>
-              <option value="completed">Completed</option>
-              <option value="paused">Paused</option>
-            </select>
-          )}
-
-          <Button variant="glass" size="sm">
+          <Button variant="glass" size="sm" onClick={() => setIsFiltersOpen(true)}>
             <Filter className="w-4 h-4 mr-2" />
             <span className="hidden sm:inline">Filter</span>
           </Button>
@@ -304,6 +428,7 @@ export const BudgetOverview: React.FC = () => {
               budget={budget}
               onEdit={() => handleEditBudget(budget)}
               onDelete={() => handleDeleteBudget(budget._id || budget.id || '')}
+              onViewDetails={() => handleViewBudgetDetails(budget)}
               formatAmount={formatAmount}
             />
           ))}
@@ -314,7 +439,10 @@ export const BudgetOverview: React.FC = () => {
                 <Target className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No budgets found</h3>
                 <p className="text-gray-600 dark:text-gray-300 mb-4">
-                  Create your first budget to start tracking your spending.
+                  {budgets.length === 0 
+                    ? 'Create your first budget to start tracking your spending.'
+                    : 'No budgets match your current filters. Try adjusting your filter criteria.'
+                  }
                 </p>
                 <Button onClick={() => setIsCreateBudgetOpen(true)}>
                   <Plus className="w-4 h-4 mr-2" />
@@ -334,6 +462,8 @@ export const BudgetOverview: React.FC = () => {
               goal={goal}
               onEdit={() => handleEditGoal(goal)}
               onDelete={() => handleDeleteGoal(goal._id || goal.id || '')}
+              onAddProgress={() => handleAddProgress(goal)}
+              onStatusChange={(status) => handleStatusChange(goal, status)}
               formatAmount={formatAmount}
             />
           ))}
@@ -344,7 +474,10 @@ export const BudgetOverview: React.FC = () => {
                 <CheckCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No goals found</h3>
                 <p className="text-gray-600 dark:text-gray-300 mb-4">
-                  Set your first financial goal to start saving.
+                  {goals.length === 0 
+                    ? 'Set your first financial goal to start saving.'
+                    : 'No goals match your current filters. Try adjusting your filter criteria.'
+                  }
                 </p>
                 <Button onClick={() => setIsCreateGoalOpen(true)}>
                   <Plus className="w-4 h-4 mr-2" />
@@ -360,7 +493,7 @@ export const BudgetOverview: React.FC = () => {
         <BudgetAnalyticsChart analytics={analytics} formatAmount={formatAmount} />
       )}
 
-      {/* Forms */}
+      {/* Modals and Forms */}
       <CreateBudgetForm
         isOpen={isCreateBudgetOpen}
         onClose={() => setIsCreateBudgetOpen(false)}
@@ -391,6 +524,35 @@ export const BudgetOverview: React.FC = () => {
         }}
         onSuccess={fetchData}
         goal={editingGoal}
+      />
+
+      <BudgetDetailsModal
+        isOpen={isBudgetDetailsOpen}
+        onClose={() => {
+          setIsBudgetDetailsOpen(false);
+          setSelectedBudget(null);
+        }}
+        budget={selectedBudget}
+        formatAmount={formatAmount}
+      />
+
+      <AddProgressModal
+        isOpen={isAddProgressOpen}
+        onClose={() => {
+          setIsAddProgressOpen(false);
+          setSelectedGoal(null);
+        }}
+        goal={selectedGoal}
+        onAddProgress={handleProgressSubmit}
+        formatAmount={formatAmount}
+      />
+
+      <BudgetFilters
+        isOpen={isFiltersOpen}
+        onClose={() => setIsFiltersOpen(false)}
+        filters={filters}
+        onFiltersChange={setFilters}
+        categories={categories}
       />
     </div>
   );

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Edit3, Trash2, AlertTriangle, CheckCircle, TrendingUp, Calendar, Tag } from 'lucide-react';
+import { Edit3, Trash2, AlertTriangle, CheckCircle, TrendingUp, Calendar, Tag, Eye } from 'lucide-react';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { Budget } from '../services/budgetService';
@@ -8,6 +8,7 @@ interface BudgetCardProps {
   budget: Budget;
   onEdit: () => void;
   onDelete: () => void;
+  onViewDetails: () => void;
   formatAmount: (amount: number) => string;
 }
 
@@ -15,6 +16,7 @@ export const BudgetCard: React.FC<BudgetCardProps> = ({
   budget,
   onEdit,
   onDelete,
+  onViewDetails,
   formatAmount
 }) => {
   const percentage = Math.min((budget.spentAmount / budget.budgetedAmount) * 100, 100);
@@ -57,6 +59,16 @@ export const BudgetCard: React.FC<BudgetCardProps> = ({
       year: 'numeric'
     });
   };
+
+  const getDaysRemaining = () => {
+    const endDate = new Date(budget.endDate);
+    const today = new Date();
+    const diffTime = endDate.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
+
+  const daysRemaining = getDaysRemaining();
 
   return (
     <Card className="hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 hover:scale-105">
@@ -114,7 +126,7 @@ export const BudgetCard: React.FC<BudgetCardProps> = ({
             </span>
           </div>
           
-          <div className="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-3 backdrop-blur-md overflow-hidden">
+          <div className="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-3 backdrop-blur-md overflow-hidden relative">
             <div
               className={`h-3 rounded-full transition-all duration-500 ${getStatusColor()}`}
               style={{ width: `${Math.min(percentage, 100)}%` }}
@@ -162,8 +174,14 @@ export const BudgetCard: React.FC<BudgetCardProps> = ({
             <Calendar className="w-3 h-3" />
             <span className="capitalize">{budget.period}</span>
           </div>
-          <span>
-            {formatDate(budget.startDate)} - {formatDate(budget.endDate)}
+          <span className={`font-medium ${
+            daysRemaining < 0 ? 'text-red-500 dark:text-red-400' :
+            daysRemaining < 7 ? 'text-yellow-500 dark:text-yellow-400' :
+            'text-green-500 dark:text-green-400'
+          }`}>
+            {daysRemaining < 0 ? `${Math.abs(daysRemaining)} days overdue` :
+             daysRemaining === 0 ? 'Ends today' :
+             `${daysRemaining} days left`}
           </span>
         </div>
 
@@ -195,8 +213,9 @@ export const BudgetCard: React.FC<BudgetCardProps> = ({
             <Edit3 className="w-3 h-3 mr-1" />
             Edit
           </Button>
-          <Button variant="ghost" size="sm" className="flex-1">
-            View Details
+          <Button variant="ghost" size="sm" className="flex-1" onClick={onViewDetails}>
+            <Eye className="w-3 h-3 mr-1" />
+            Details
           </Button>
         </div>
       </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Edit3, Trash2, Target, Calendar, Flag, Play, Pause, CheckCircle } from 'lucide-react';
+import { Edit3, Trash2, Target, Calendar, Flag, Play, Pause, CheckCircle, Plus } from 'lucide-react';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { BudgetGoal } from '../services/budgetService';
@@ -8,6 +8,8 @@ interface BudgetGoalCardProps {
   goal: BudgetGoal;
   onEdit: () => void;
   onDelete: () => void;
+  onAddProgress: () => void;
+  onStatusChange: (status: 'active' | 'completed' | 'paused' | 'cancelled') => void;
   formatAmount: (amount: number) => string;
 }
 
@@ -15,6 +17,8 @@ export const BudgetGoalCard: React.FC<BudgetGoalCardProps> = ({
   goal,
   onEdit,
   onDelete,
+  onAddProgress,
+  onStatusChange,
   formatAmount
 }) => {
   const percentage = Math.min((goal.currentAmount / goal.targetAmount) * 100, 100);
@@ -68,6 +72,16 @@ export const BudgetGoalCard: React.FC<BudgetGoalCardProps> = ({
     });
   };
 
+  const getStatusOptions = () => {
+    const allStatuses = [
+      { value: 'active', label: 'Active', icon: Play },
+      { value: 'completed', label: 'Completed', icon: CheckCircle },
+      { value: 'paused', label: 'Paused', icon: Pause },
+      { value: 'cancelled', label: 'Cancelled', icon: Trash2 }
+    ];
+    return allStatuses.filter(status => status.value !== goal.status);
+  };
+
   return (
     <Card className="hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 hover:scale-105">
       <div className="space-y-4">
@@ -108,20 +122,41 @@ export const BudgetGoalCard: React.FC<BudgetGoalCardProps> = ({
           </div>
         </div>
 
-        {/* Priority Badge */}
+        {/* Priority and Status */}
         <div className="flex items-center justify-between">
           <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor()}`}>
             <Flag className="w-3 h-3 mr-1" />
             {goal.priority.charAt(0).toUpperCase() + goal.priority.slice(1)} Priority
           </span>
-          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium capitalize ${
-            goal.status === 'completed' ? 'text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-500/20' :
-            goal.status === 'paused' ? 'text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-500/20' :
-            goal.status === 'cancelled' ? 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/20' :
-            'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/20'
-          }`}>
-            {goal.status}
-          </span>
+          
+          {/* Status Dropdown */}
+          <div className="relative group">
+            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium capitalize cursor-pointer ${
+              goal.status === 'completed' ? 'text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-500/20' :
+              goal.status === 'paused' ? 'text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-500/20' :
+              goal.status === 'cancelled' ? 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/20' :
+              'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/20'
+            }`}>
+              {goal.status}
+            </span>
+            
+            {/* Dropdown Menu */}
+            <div className="absolute right-0 top-full mt-1 w-32 bg-white dark:bg-slate-800 border border-gray-200/50 dark:border-slate-700/50 rounded-xl shadow-xl backdrop-blur-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
+              {getStatusOptions().map((status) => {
+                const StatusIcon = status.icon;
+                return (
+                  <button
+                    key={status.value}
+                    onClick={() => onStatusChange(status.value as any)}
+                    className="w-full flex items-center space-x-2 px-3 py-2 text-left hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors text-sm first:rounded-t-xl last:rounded-b-xl"
+                  >
+                    <StatusIcon className="w-3 h-3" />
+                    <span>{status.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
 
         {/* Description */}
@@ -204,7 +239,8 @@ export const BudgetGoalCard: React.FC<BudgetGoalCardProps> = ({
             <Edit3 className="w-3 h-3 mr-1" />
             Edit
           </Button>
-          <Button variant="ghost" size="sm" className="flex-1">
+          <Button variant="ghost" size="sm" className="flex-1" onClick={onAddProgress}>
+            <Plus className="w-3 h-3 mr-1" />
             Add Progress
           </Button>
         </div>
