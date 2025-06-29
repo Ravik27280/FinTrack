@@ -9,6 +9,7 @@ const authRoutes = require("./routes/authRoutes");
 const transactionRoutes = require("./routes/transactionRoutes");
 const budgetRoutes = require("./routes/budgetRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
+const aiInsightsRoutes = require("./routes/aiInsightsRoutes");
 
 const app =express();
 
@@ -20,6 +21,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/transactions", transactionRoutes);
 app.use("/api/budgets", budgetRoutes);
 app.use("/api/categories", categoryRoutes);
+app.use("/api/ai-insights", aiInsightsRoutes);
 
 mongoose.connect(process.env.MONGO_URI).then(()=>{
     console.log("MongoDB connected successfully");
