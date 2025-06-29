@@ -23,7 +23,8 @@ import {
   getBudgetAnalytics,
   deleteBudget,
   deleteBudgetGoal,
-  updateBudgetGoal
+  updateBudgetGoal,
+  refreshBudgets
 } from '../services/budgetService';
 
 export const BudgetOverview: React.FC = () => {
@@ -63,12 +64,18 @@ export const BudgetOverview: React.FC = () => {
   const fetchData = async () => {
     try {
       setIsLoading(true);
+      
+      // First refresh budgets to ensure latest spending calculations
+      console.log('Refreshing budget calculations...');
+      await refreshBudgets();
+      
       const [budgetsData, goalsData, analyticsData] = await Promise.all([
         getBudgets(),
         getBudgetGoals(),
         getBudgetAnalytics()
       ]);
       
+      console.log('Fetched budgets:', budgetsData);
       setBudgets(budgetsData);
       setGoals(goalsData);
       setAnalytics(analyticsData);

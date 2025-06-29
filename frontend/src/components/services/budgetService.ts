@@ -170,8 +170,7 @@ export const deleteBudgetGoal = async (id: string): Promise<{ message: string }>
 export const refreshBudgets = async (): Promise<Budget[]> => {
   try {
     console.log('Force refreshing budgets...');
-    // Add a timestamp to force cache refresh
-    const res = await api.get<Budget[]>(`/budgets?refresh=${Date.now()}`);
+    const res = await api.post<Budget[]>("/budgets/refresh");
     console.log('Refreshed budgets response:', res.data);
     return res.data;
   } catch (error) {

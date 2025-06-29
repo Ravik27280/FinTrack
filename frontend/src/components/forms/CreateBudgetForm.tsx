@@ -166,6 +166,28 @@ export const CreateBudgetForm: React.FC<CreateBudgetFormProps> = ({
     }
   };
 
+  // Validate end date when start date changes
+  const handleStartDateChange = (value: string) => {
+    handleInputChange('startDate', value);
+    
+    // Clear end date error if it exists and dates are now valid
+    if (errors.endDate && formData.endDate && new Date(formData.endDate) > new Date(value)) {
+      setErrors(prev => ({ ...prev, endDate: '' }));
+    }
+  };
+
+  // Validate end date when it changes
+  const handleEndDateChange = (value: string) => {
+    handleInputChange('endDate', value);
+    
+    // Validate immediately
+    if (value && formData.startDate && new Date(value) <= new Date(formData.startDate)) {
+      setErrors(prev => ({ ...prev, endDate: 'End date must be after start date' }));
+    } else if (errors.endDate) {
+      setErrors(prev => ({ ...prev, endDate: '' }));
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -256,7 +278,7 @@ export const CreateBudgetForm: React.FC<CreateBudgetFormProps> = ({
                 label="Start Date"
                 type="date"
                 value={formData.startDate}
-                onChange={(e) => handleInputChange('startDate', e.target.value)}
+                onChange={(e) => handleStartDateChange(e.target.value)}
                 icon={<Calendar className="w-5 h-5 text-gray-400" />}
                 error={errors.startDate}
                 disabled={isLoading}
@@ -266,7 +288,8 @@ export const CreateBudgetForm: React.FC<CreateBudgetFormProps> = ({
                 label="End Date"
                 type="date"
                 value={formData.endDate}
-                onChange={(e) => handleInputChange('endDate', e.target.value)}
+                onChange={(e) => handleEndDateChange(e.target.value)}
+                min={formData.startDate ? new Date(new Date(formData.startDate).getTime() + 24 * 60 * 60 * 1000).toISOString().split('T')[0] : undefined}
                 icon={<Calendar className="w-5 h-5 text-gray-400" />}
                 error={errors.endDate}
                 disabled={isLoading}

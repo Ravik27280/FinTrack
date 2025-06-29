@@ -30,7 +30,13 @@ exports.getAllBudgets = async (req, res) => {
 
       // Update the budget document with the calculated spent amount
       const spentAmount = spent[0]?.total || 0;
-      await Budget.findByIdAndUpdate(budget._id, { spentAmount });
+      
+      // Force update the budget document
+      await Budget.findByIdAndUpdate(budget._id, { 
+        spentAmount: spentAmount 
+      }, { new: true });
+
+      console.log(`Budget ${budget.name} - Category: ${budget.category}, Spent: ${spentAmount}`);
 
       // Return the budget with updated spent amount
       return {
@@ -224,6 +230,7 @@ exports.getAnalytics = async (req, res) => {
 // Helper function to recalculate budget spent amounts (can be called after transaction changes)
 exports.recalculateBudgetSpending = async (userId) => {
   try {
+    console.log('Recalculating budget spending for user:', userId);
     const budgets = await Budget.find({ userId });
     
     await Promise.all(budgets.map(async budget => {
@@ -248,9 +255,27 @@ exports.recalculateBudgetSpending = async (userId) => {
       ]);
 
       const spentAmount = spent[0]?.total || 0;
+      console.log(`Updating budget ${budget.name} - Category: ${budget.category}, Spent: ${spentAmount}`);
+      
       await Budget.findByIdAndUpdate(budget._id, { spentAmount });
     }));
+    
+    console.log('Budget spending recalculation completed');
   } catch (error) {
     console.error('Error recalculating budget spending:', error);
+  }
+};
+
+// Add a new endpoint to force refresh budget calculations
+exports.refreshBudgets = async (req, res) => {
+  try {
+    await exports.recalculateBudgetSpending(req.userId);
+    
+    // Return updated budgets
+    const budgets = await Budget.find({ userId: req.userId });
+    res.json(budgets);
+  } catch (error) {
+    console.error('Error refreshing budgets:', error);
+    res.status(500).json({ error: error.message });
   }
 };
