@@ -8,28 +8,13 @@ exports.getAllBudgets = async (req, res) => {
 
     const enrichedBudgets = await Promise.all(budgets.map(async budget => {
       // Calculate spent amount from transactions within budget period and category
-      const spent = await Transaction.aggregate([
-        {
-          $match: {
-            userId: req.userId,
-            category: budget.category,
-            type: 'expense', // Only count expense transactions
-            date: { 
-              $gte: new Date(budget.startDate), 
-              $lte: new Date(budget.endDate) 
-            }
-          }
-        },
-        { 
-          $group: { 
-            _id: null, 
-            total: { $sum: { $abs: "$amount" } } // Use absolute value to ensure positive amounts
-          } 
-        }
-      ]);
+      const transactions = await Transaction.find({ userId: req.userId, category: budget.category, type: 'expense'});
+      const spents = Math.abs(transactions.reduce((total, tx) => total + tx.amount, 0));
+
+      console.log('spents:', spents);
 
       // Update the budget document with the calculated spent amount
-      const spentAmount = spent[0]?.total || 0;
+      const spentAmount = spents || 0;
       
       // Force update the budget document
       await Budget.findByIdAndUpdate(budget._id, { 

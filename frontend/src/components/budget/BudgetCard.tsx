@@ -69,6 +69,7 @@ export const BudgetCard: React.FC<BudgetCardProps> = ({
   };
 
   const daysRemaining = getDaysRemaining();
+  
 
   return (
     <Card className="hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 hover:scale-105">
@@ -120,9 +121,10 @@ export const BudgetCard: React.FC<BudgetCardProps> = ({
         {/* Progress */}
         <div className="space-y-3">
           <div className="flex justify-between text-sm">
+            
             <span className="text-gray-600 dark:text-gray-300">Spent</span>
             <span className="font-medium text-gray-900 dark:text-white">
-              {formatAmount(budget.spentAmount)}
+              {formatAmount(budget.spentAmount) }
             </span>
           </div>
           
