@@ -167,7 +167,8 @@ export const Dashboard: React.FC = () => {
               data={financialTrendData}
               title="6-Month Financial Trend"
               showBalance={true}
-              height={250}
+              height={280}
+              formatAmount={formatAmount}
             />
           </div>
         </Card>
@@ -178,6 +179,7 @@ export const Dashboard: React.FC = () => {
               transactions={transactions}
               type="expense"
               title="Expense Categories"
+              formatAmount={formatAmount}
             />
           </div>
         </Card>
@@ -193,7 +195,7 @@ export const Dashboard: React.FC = () => {
                   <button
                     key={period}
                     onClick={() => setSelectedPeriod(period)}
-                    className={`px-2 py-1 rounded-lg text-xs font-medium transition-all duration-300 ${
+                    className={`px-3 py-1 rounded-lg text-xs font-medium transition-all duration-300 ${
                       selectedPeriod === period
                         ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/25'
                         : 'bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700'
@@ -208,6 +210,7 @@ export const Dashboard: React.FC = () => {
               transactions={transactions}
               period={selectedPeriod}
               title=""
+              formatAmount={formatAmount}
             />
           </div>
         </Card>
@@ -217,6 +220,7 @@ export const Dashboard: React.FC = () => {
             <MonthlyComparisonChart 
               transactions={transactions}
               title="Income vs Expenses"
+              formatAmount={formatAmount}
             />
           </div>
         </Card>
@@ -229,6 +233,7 @@ export const Dashboard: React.FC = () => {
               transactions={transactions}
               type="income"
               title="Income Sources"
+              formatAmount={formatAmount}
             />
           </div>
         </Card>

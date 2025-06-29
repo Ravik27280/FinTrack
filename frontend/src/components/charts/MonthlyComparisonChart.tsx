@@ -4,6 +4,7 @@ import { Transaction } from '../services/transactionService';
 interface MonthlyComparisonChartProps {
   transactions: Transaction[];
   title?: string;
+  formatAmount?: (amount: number) => string;
 }
 
 interface MonthData {
@@ -16,7 +17,8 @@ interface MonthData {
 
 export const MonthlyComparisonChart: React.FC<MonthlyComparisonChartProps> = ({
   transactions,
-  title = "Monthly Income vs Expenses"
+  title = "Monthly Income vs Expenses",
+  formatAmount = (amount) => `$${amount.toLocaleString()}`
 }) => {
   const generateMonthlyData = (): MonthData[] => {
     const now = new Date();
@@ -58,10 +60,10 @@ export const MonthlyComparisonChart: React.FC<MonthlyComparisonChartProps> = ({
     ...monthlyData.map(d => Math.max(d.income, d.expense))
   );
   
-  const height = 250;
-  const padding = 50;
+  const height = 280;
+  const padding = 60;
   const chartHeight = height - padding * 2;
-  const barWidth = 30;
+  const barWidth = 35;
   
   const getY = (value: number) => {
     return padding + chartHeight - (value / maxValue) * chartHeight;
@@ -71,7 +73,7 @@ export const MonthlyComparisonChart: React.FC<MonthlyComparisonChartProps> = ({
     const usableWidth = totalWidth - padding * 2;
     const groupWidth = usableWidth / monthlyData.length;
     const groupCenter = padding + (index * groupWidth) + (groupWidth / 2);
-    return groupCenter + (barIndex - 0.5) * (barWidth + 5);
+    return groupCenter + (barIndex - 0.5) * (barWidth + 8);
   };
 
   return (
@@ -79,11 +81,11 @@ export const MonthlyComparisonChart: React.FC<MonthlyComparisonChartProps> = ({
       <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">{title}</h3>
       
       <div className="w-full overflow-hidden">
-        <div className="w-full" style={{ minWidth: '400px' }}>
+        <div className="w-full" style={{ minWidth: '500px' }}>
           <svg 
             width="100%" 
             height={height} 
-            viewBox={`0 0 500 ${height}`}
+            viewBox={`0 0 600 ${height}`}
             preserveAspectRatio="xMidYMid meet"
             className="w-full h-auto"
           >
@@ -97,13 +99,13 @@ export const MonthlyComparisonChart: React.FC<MonthlyComparisonChartProps> = ({
                 <stop offset="100%" stopColor="#DC2626" />
               </linearGradient>
               
-              <pattern id="comparisonGrid" width="40" height="30" patternUnits="userSpaceOnUse">
-                <path d="M 40 0 L 0 0 0 30" fill="none" stroke="rgba(156, 163, 175, 0.2)" strokeWidth="1"/>
+              <pattern id="comparisonGrid" width="50" height="40" patternUnits="userSpaceOnUse">
+                <path d="M 50 0 L 0 0 0 40" fill="none" stroke="rgba(156, 163, 175, 0.2)" strokeWidth="1"/>
               </pattern>
             </defs>
 
             {/* Grid background */}
-            <rect width="500" height={height} fill="url(#comparisonGrid)" />
+            <rect width="600" height={height} fill="url(#comparisonGrid)" />
 
             {/* Bars */}
             {monthlyData.map((data, index) => {
@@ -114,30 +116,30 @@ export const MonthlyComparisonChart: React.FC<MonthlyComparisonChartProps> = ({
                 <g key={index}>
                   {/* Income bar */}
                   <rect
-                    x={getX(index, 0, 500)}
+                    x={getX(index, 0, 600)}
                     y={getY(data.income)}
                     width={barWidth}
                     height={incomeHeight}
                     fill="url(#incomeBarGradient)"
-                    rx="4"
+                    rx="6"
                     className="hover:opacity-80 transition-opacity duration-300 cursor-pointer"
                   />
                   
                   {/* Expense bar */}
                   <rect
-                    x={getX(index, 1, 500)}
+                    x={getX(index, 1, 600)}
                     y={getY(data.expense)}
                     width={barWidth}
                     height={expenseHeight}
                     fill="url(#expenseBarGradient)"
-                    rx="4"
+                    rx="6"
                     className="hover:opacity-80 transition-opacity duration-300 cursor-pointer"
                   />
                   
                   {/* Month label */}
                   <text
-                    x={getX(index, 0.5, 500) + barWidth / 2}
-                    y={height - 10}
+                    x={getX(index, 0.5, 600) + barWidth / 2}
+                    y={height - 15}
                     textAnchor="middle"
                     className="text-sm fill-gray-700 dark:fill-gray-300 font-medium"
                   >
@@ -146,8 +148,8 @@ export const MonthlyComparisonChart: React.FC<MonthlyComparisonChartProps> = ({
                   
                   {/* Net value */}
                   <text
-                    x={getX(index, 0.5, 500) + barWidth / 2}
-                    y={height - 25}
+                    x={getX(index, 0.5, 600) + barWidth / 2}
+                    y={height - 35}
                     textAnchor="middle"
                     className={`text-xs font-medium ${
                       data.net >= 0 
@@ -155,30 +157,30 @@ export const MonthlyComparisonChart: React.FC<MonthlyComparisonChartProps> = ({
                         : 'fill-red-600 dark:fill-red-400'
                     }`}
                   >
-                    {data.net >= 0 ? '+' : ''}${(data.net / 1000).toFixed(1)}k
+                    {data.net >= 0 ? '+' : ''}{formatAmount(data.net)}
                   </text>
                 </g>
               );
             })}
 
-            {/* Y-axis labels */}
+            {/* Y-axis labels with currency formatting */}
             {[0, maxValue * 0.25, maxValue * 0.5, maxValue * 0.75, maxValue].map((value, index) => (
               <text
                 key={index}
-                x={padding - 10}
+                x={padding - 15}
                 y={getY(value)}
                 textAnchor="end"
                 className="text-xs fill-gray-600 dark:fill-gray-400"
                 dominantBaseline="middle"
               >
-                ${(value / 1000).toFixed(0)}k
+                {formatAmount(value)}
               </text>
             ))}
           </svg>
         </div>
 
         {/* Legend */}
-        <div className="flex items-center justify-center space-x-4 mt-4 flex-wrap">
+        <div className="flex items-center justify-center space-x-6 mt-4 flex-wrap">
           <div className="flex items-center space-x-2">
             <div className="w-4 h-4 bg-green-500 rounded"></div>
             <span className="text-sm text-gray-600 dark:text-gray-300">Income</span>
@@ -195,33 +197,33 @@ export const MonthlyComparisonChart: React.FC<MonthlyComparisonChartProps> = ({
       </div>
 
       {/* Summary stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-4">
-        <div className="text-center p-2 bg-green-50 dark:bg-green-500/20 rounded-lg">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
+        <div className="text-center p-3 bg-green-50 dark:bg-green-500/20 rounded-lg">
           <p className="text-xs text-green-600 dark:text-green-400">Avg Income</p>
           <p className="text-sm font-semibold text-green-700 dark:text-green-300">
-            ${(monthlyData.reduce((sum, d) => sum + d.income, 0) / monthlyData.length).toLocaleString()}
+            {formatAmount(monthlyData.reduce((sum, d) => sum + d.income, 0) / monthlyData.length)}
           </p>
         </div>
-        <div className="text-center p-2 bg-red-50 dark:bg-red-500/20 rounded-lg">
+        <div className="text-center p-3 bg-red-50 dark:bg-red-500/20 rounded-lg">
           <p className="text-xs text-red-600 dark:text-red-400">Avg Expenses</p>
           <p className="text-sm font-semibold text-red-700 dark:text-red-300">
-            ${(monthlyData.reduce((sum, d) => sum + d.expense, 0) / monthlyData.length).toLocaleString()}
+            {formatAmount(monthlyData.reduce((sum, d) => sum + d.expense, 0) / monthlyData.length)}
           </p>
         </div>
-        <div className="text-center p-2 bg-blue-50 dark:bg-blue-500/20 rounded-lg">
+        <div className="text-center p-3 bg-blue-50 dark:bg-blue-500/20 rounded-lg">
           <p className="text-xs text-blue-600 dark:text-blue-400">Best Month</p>
           <p className="text-sm font-semibold text-blue-700 dark:text-blue-300">
             {monthlyData.reduce((best, current) => current.net > best.net ? current : best).month}
           </p>
         </div>
-        <div className="text-center p-2 bg-purple-50 dark:bg-purple-500/20 rounded-lg">
+        <div className="text-center p-3 bg-purple-50 dark:bg-purple-500/20 rounded-lg">
           <p className="text-xs text-purple-600 dark:text-purple-400">Total Net</p>
           <p className={`text-sm font-semibold ${
             monthlyData.reduce((sum, d) => sum + d.net, 0) >= 0
               ? 'text-green-700 dark:text-green-300'
               : 'text-red-700 dark:text-red-300'
           }`}>
-            ${monthlyData.reduce((sum, d) => sum + d.net, 0).toLocaleString()}
+            {formatAmount(monthlyData.reduce((sum, d) => sum + d.net, 0))}
           </p>
         </div>
       </div>

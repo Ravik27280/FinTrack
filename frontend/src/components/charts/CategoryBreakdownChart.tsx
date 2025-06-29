@@ -13,6 +13,7 @@ interface CategoryBreakdownChartProps {
   transactions: Transaction[];
   type: 'income' | 'expense';
   title?: string;
+  formatAmount?: (amount: number) => string;
 }
 
 const categoryColors = [
@@ -24,7 +25,8 @@ const categoryColors = [
 export const CategoryBreakdownChart: React.FC<CategoryBreakdownChartProps> = ({
   transactions,
   type,
-  title
+  title,
+  formatAmount = (amount) => `$${amount.toLocaleString()}`
 }) => {
   const filteredTransactions = transactions.filter(t => t.type === type);
   
@@ -73,9 +75,9 @@ export const CategoryBreakdownChart: React.FC<CategoryBreakdownChartProps> = ({
     }))
     .sort((a, b) => b.amount - a.amount);
 
-  const size = 180;
+  const size = 200;
   const center = size / 2;
-  const radius = size * 0.35;
+  const radius = size * 0.4;
   
   let cumulativePercentage = 0;
   
@@ -102,7 +104,7 @@ export const CategoryBreakdownChart: React.FC<CategoryBreakdownChartProps> = ({
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">{title}</h3>
       )}
       
-      <div className="flex flex-col lg:flex-row items-center space-y-6 lg:space-y-0 lg:space-x-6">
+      <div className="flex flex-col lg:flex-row items-center space-y-6 lg:space-y-0 lg:space-x-8">
         {/* Pie Chart */}
         <div className="relative flex-shrink-0">
           <svg width={size} height={size} className="transform -rotate-90 drop-shadow-lg">
@@ -125,7 +127,7 @@ export const CategoryBreakdownChart: React.FC<CategoryBreakdownChartProps> = ({
             <circle
               cx={center}
               cy={center}
-              r={radius * 0.6}
+              r={radius * 0.55}
               fill="white"
               className="dark:fill-slate-800"
             />
@@ -134,7 +136,7 @@ export const CategoryBreakdownChart: React.FC<CategoryBreakdownChartProps> = ({
           {/* Center text */}
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <div className="text-lg font-semibold text-gray-900 dark:text-white">
-              ${totalAmount.toLocaleString()}
+              {formatAmount(totalAmount)}
             </div>
             <div className="text-xs text-gray-500 dark:text-gray-400 capitalize">
               Total {type}
@@ -144,15 +146,15 @@ export const CategoryBreakdownChart: React.FC<CategoryBreakdownChartProps> = ({
         
         {/* Legend */}
         <div className="flex-1 w-full min-w-0">
-          <div className="space-y-2 max-h-48 overflow-y-auto">
-            {categoryData.slice(0, 6).map((item, index) => (
+          <div className="space-y-3 max-h-64 overflow-y-auto">
+            {categoryData.slice(0, 8).map((item, index) => (
               <div 
                 key={index} 
-                className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer"
+                className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer"
               >
-                <div className="flex items-center space-x-2 min-w-0 flex-1">
+                <div className="flex items-center space-x-3 min-w-0 flex-1">
                   <div 
-                    className="w-3 h-3 rounded-full shadow-sm flex-shrink-0" 
+                    className="w-4 h-4 rounded-full shadow-sm flex-shrink-0" 
                     style={{ backgroundColor: item.color }}
                   />
                   <div className="min-w-0 flex-1">
@@ -164,9 +166,9 @@ export const CategoryBreakdownChart: React.FC<CategoryBreakdownChartProps> = ({
                     </div>
                   </div>
                 </div>
-                <div className="text-right flex-shrink-0 ml-2">
+                <div className="text-right flex-shrink-0 ml-3">
                   <div className="text-sm font-semibold text-gray-900 dark:text-white">
-                    ${item.amount.toLocaleString()}
+                    {formatAmount(item.amount)}
                   </div>
                   <div className="text-xs text-gray-500 dark:text-gray-400">
                     {item.percentage.toFixed(1)}%
@@ -174,10 +176,10 @@ export const CategoryBreakdownChart: React.FC<CategoryBreakdownChartProps> = ({
                 </div>
               </div>
             ))}
-            {categoryData.length > 6 && (
+            {categoryData.length > 8 && (
               <div className="text-center py-2">
                 <span className="text-xs text-gray-500 dark:text-gray-400">
-                  +{categoryData.length - 6} more categories
+                  +{categoryData.length - 8} more categories
                 </span>
               </div>
             )}

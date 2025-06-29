@@ -5,6 +5,7 @@ interface SpendingTrendChartProps {
   transactions: Transaction[];
   period: 'week' | 'month' | 'year';
   title?: string;
+  formatAmount?: (amount: number) => string;
 }
 
 interface TrendData {
@@ -16,7 +17,8 @@ interface TrendData {
 export const SpendingTrendChart: React.FC<SpendingTrendChartProps> = ({
   transactions,
   period,
-  title = "Spending Trend"
+  title = "Spending Trend",
+  formatAmount = (amount) => `$${amount.toLocaleString()}`
 }) => {
   const generateTrendData = (): TrendData[] => {
     const now = new Date();
@@ -87,8 +89,8 @@ export const SpendingTrendChart: React.FC<SpendingTrendChartProps> = ({
   const maxAmount = Math.max(...trendData.map(d => d.amount));
   const avgAmount = trendData.reduce((sum, d) => sum + d.amount, 0) / trendData.length;
   
-  const height = 200;
-  const padding = 40;
+  const height = 220;
+  const padding = 50;
   const chartHeight = height - padding * 2;
   
   const getX = (index: number, totalWidth: number) => {
@@ -120,33 +122,33 @@ export const SpendingTrendChart: React.FC<SpendingTrendChartProps> = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-2 mb-4">
-        <div className="text-center p-2 bg-gray-50 dark:bg-slate-800/50 rounded-lg">
+      <div className="grid grid-cols-3 gap-3 mb-4">
+        <div className="text-center p-3 bg-gray-50 dark:bg-slate-800/50 rounded-lg">
           <p className="text-xs text-gray-600 dark:text-gray-300">Average</p>
           <p className="text-sm font-semibold text-gray-900 dark:text-white">
-            ${avgAmount.toLocaleString()}
+            {formatAmount(avgAmount)}
           </p>
         </div>
-        <div className="text-center p-2 bg-gray-50 dark:bg-slate-800/50 rounded-lg">
+        <div className="text-center p-3 bg-gray-50 dark:bg-slate-800/50 rounded-lg">
           <p className="text-xs text-gray-600 dark:text-gray-300">Highest</p>
           <p className="text-sm font-semibold text-gray-900 dark:text-white">
-            ${maxAmount.toLocaleString()}
+            {formatAmount(maxAmount)}
           </p>
         </div>
-        <div className="text-center p-2 bg-gray-50 dark:bg-slate-800/50 rounded-lg">
+        <div className="text-center p-3 bg-gray-50 dark:bg-slate-800/50 rounded-lg">
           <p className="text-xs text-gray-600 dark:text-gray-300">Total</p>
           <p className="text-sm font-semibold text-gray-900 dark:text-white">
-            ${trendData.reduce((sum, d) => sum + d.amount, 0).toLocaleString()}
+            {formatAmount(trendData.reduce((sum, d) => sum + d.amount, 0))}
           </p>
         </div>
       </div>
 
       <div className="w-full overflow-hidden">
-        <div className="w-full" style={{ minWidth: '300px' }}>
+        <div className="w-full" style={{ minWidth: '400px' }}>
           <svg 
             width="100%" 
             height={height} 
-            viewBox={`0 0 400 ${height}`}
+            viewBox={`0 0 500 ${height}`}
             preserveAspectRatio="xMidYMid meet"
             className="w-full h-auto"
           >
@@ -156,19 +158,19 @@ export const SpendingTrendChart: React.FC<SpendingTrendChartProps> = ({
                 <stop offset="100%" stopColor="#EF4444" stopOpacity="0.05" />
               </linearGradient>
               
-              <pattern id="spendingGrid" width="30" height="20" patternUnits="userSpaceOnUse">
-                <path d="M 30 0 L 0 0 0 20" fill="none" stroke="rgba(156, 163, 175, 0.2)" strokeWidth="1"/>
+              <pattern id="spendingGrid" width="40" height="30" patternUnits="userSpaceOnUse">
+                <path d="M 40 0 L 0 0 0 30" fill="none" stroke="rgba(156, 163, 175, 0.2)" strokeWidth="1"/>
               </pattern>
             </defs>
 
             {/* Grid background */}
-            <rect width="400" height={height} fill="url(#spendingGrid)" />
+            <rect width="500" height={height} fill="url(#spendingGrid)" />
 
             {/* Average line */}
             <line
               x1={padding}
               y1={getY(avgAmount)}
-              x2={400 - padding}
+              x2={500 - padding}
               y2={getY(avgAmount)}
               stroke="#F59E0B"
               strokeWidth="2"
@@ -179,7 +181,7 @@ export const SpendingTrendChart: React.FC<SpendingTrendChartProps> = ({
             {/* Generate paths */}
             {(() => {
               const points = trendData.map((item, index) => ({
-                x: getX(index, 400),
+                x: getX(index, 500),
                 y: getY(item.amount),
                 ...item
               }));
@@ -200,7 +202,7 @@ export const SpendingTrendChart: React.FC<SpendingTrendChartProps> = ({
                     d={pathData}
                     fill="none"
                     stroke="#EF4444"
-                    strokeWidth="2"
+                    strokeWidth="3"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   />
@@ -211,9 +213,9 @@ export const SpendingTrendChart: React.FC<SpendingTrendChartProps> = ({
                       key={index}
                       cx={point.x}
                       cy={point.y}
-                      r="3"
+                      r="4"
                       fill="#EF4444"
-                      className="hover:r-5 transition-all duration-300 cursor-pointer"
+                      className="hover:r-6 transition-all duration-300 cursor-pointer"
                     />
                   ))}
 
@@ -221,8 +223,8 @@ export const SpendingTrendChart: React.FC<SpendingTrendChartProps> = ({
                   {trendData.map((item, index) => (
                     <text
                       key={index}
-                      x={getX(index, 400)}
-                      y={height - 5}
+                      x={getX(index, 500)}
+                      y={height - 10}
                       textAnchor="middle"
                       className="text-xs fill-gray-600 dark:fill-gray-400"
                     >
@@ -230,17 +232,17 @@ export const SpendingTrendChart: React.FC<SpendingTrendChartProps> = ({
                     </text>
                   ))}
 
-                  {/* Y-axis labels */}
+                  {/* Y-axis labels with currency formatting */}
                   {[0, maxAmount * 0.5, maxAmount].map((value, index) => (
                     <text
                       key={index}
-                      x={padding - 10}
+                      x={padding - 15}
                       y={getY(value)}
                       textAnchor="end"
                       className="text-xs fill-gray-600 dark:fill-gray-400"
                       dominantBaseline="middle"
                     >
-                      ${(value / 1000).toFixed(0)}k
+                      {formatAmount(value)}
                     </text>
                   ))}
                 </>

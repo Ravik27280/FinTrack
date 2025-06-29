@@ -13,15 +13,18 @@ interface AdvancedLineChartProps {
   height?: number;
   showBalance?: boolean;
   title?: string;
+  formatAmount?: (value: number) => string; // <-- Add this
 }
+
 
 export const AdvancedLineChart: React.FC<AdvancedLineChartProps> = ({ 
   data, 
   height = 250, 
   showBalance = true,
-  title = "Financial Trend"
+  title = "Financial Trend",
+  formatAmount
 }) => {
-  if (!data || data.length === 0) return null;
+  if (!data || data.length === 0) return null;  
 
   const maxIncome = Math.max(...data.map(d => d.income));
   const maxExpense = Math.max(...data.map(d => Math.abs(d.expense)));
@@ -236,13 +239,13 @@ export const AdvancedLineChart: React.FC<AdvancedLineChartProps> = ({
                   {[0, maxValue * 0.5, maxValue].map((value, index) => (
                     <text
                       key={index}
-                      x={padding - 10}
+                      x={padding - 4}
                       y={getY(value)}
                       textAnchor="end"
                       className="text-xs fill-gray-600 dark:fill-gray-400"
                       dominantBaseline="middle"
                     >
-                      ${(value / 1000).toFixed(0)}k
+                      {formatAmount ? formatAmount(value) : `$${(value / 1000).toFixed(0)}k`}
                     </text>
                   ))}
                 </>
