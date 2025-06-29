@@ -56,3 +56,82 @@ A full-stack personal finance tracker that helps users manage expenses, set budg
    ```bash
    git clone https://github.com/Ravik27280/FinTrack.git
    cd FinTrack
+   ```
+
+2. **Install Frontend Dependencies**
+   ```bash
+   cd client
+   npm install
+   ```
+
+3. **Install Backend Dependencies**
+   ```bash
+   cd ../server
+   npm install
+   ```
+
+4. **Setup Environment Variables**
+
+   Create a `.env` file in `server/`:
+
+   ```
+   PORT=5000
+   MONGODB_URI=your_mongo_db_uri
+   JWT_SECRET=your_jwt_secret
+   ```
+
+5. **Run the App**
+
+   - Run backend
+     ```bash
+     cd server
+     npm run dev
+     ```
+
+   - Run frontend
+     ```bash
+     cd client
+     npm run dev
+     ```
+
+   App will be live at: [http://localhost:5173](http://localhost:5173)
+
+---
+
+## 📁 Folder Structure
+
+```
+FinTrack/
+├── client/           # React frontend
+├── server/           # Node/Express backend
+├── README.md
+```
+
+---
+
+## 📌 Upcoming Features
+
+- 🔍 Search & Filter for transactions
+- 📅 Calendar View for daily tracking
+- 📥 Import/Export transactions (CSV/Excel)
+- 🤖 AI Assistant for financial tips
+- 📱 PWA Support for mobile use
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Feel free to fork this repo and submit a pull request.
+
+---
+
+## 🧑‍💻 Author
+
+**Ravi Vishwakarma**  
+[GitHub](https://github.com/Ravik27280) | [LinkedIn](https://www.linkedin.com/in/ravi-vishwakarma27280)
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License.
