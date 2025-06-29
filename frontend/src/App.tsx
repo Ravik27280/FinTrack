@@ -121,7 +121,7 @@ function App() {
             <>
               {/* Fixed Sidebar */}
               <Sidebar
-                is Collapsed={isSidebarCollapsed}
+                isCollapsed={isSidebarCollapsed}
                 onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
                 onLogout={handleLogout}
               />
