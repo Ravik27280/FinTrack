@@ -1,16 +1,21 @@
 const express = require("express");
 const auth = require("../middlewares/authMiddleware");
+
 const {
   getAllBudgets,
   createBudget,
   updateBudget,
   deleteBudget,
-  getBudgetAnalytics,
+  getAnalytics,
+} = require("../controllers/budgetController");
+
+const {
   getAllGoals,
   createGoal,
   updateGoal,
-  deleteGoal
-} = require("../controllers/budgetController");
+  deleteGoal,
+  updateProgress
+} = require('../controllers/budgetGoalController');
 
 const router = express.Router();
 
@@ -21,12 +26,14 @@ router.get("/", getAllBudgets);
 router.post("/", createBudget);
 router.put("/:id", updateBudget);
 router.delete("/:id", deleteBudget);
-router.get("/analytics", getBudgetAnalytics);
+router.get("/analytics", getAnalytics);
 
 // Goal routes
-router.get("/goals", getAllGoals);
-router.post("/goals", createGoal);
-router.put("/goals/:id", updateGoal);
-router.delete("/goals/:id", deleteGoal);
+router.get('/goals', getAllGoals);
+router.post('/goals', createGoal);
+router.put('/goals/:id', updateGoal);
+router.delete('/goals/:id', deleteGoal);
+router.put('/goals/:id/progress', updateProgress);
+
 
 module.exports = router;
