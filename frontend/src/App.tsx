@@ -7,10 +7,11 @@ import { BottomNav } from './components/navigation/BottomNav';
 import { Dashboard } from './components/dashboard/Dashboard';
 import { TransactionTable } from './components/transactions/TransactionTable';
 import { BudgetOverview } from './components/budget/BudgetOverview';
+import { CategoryManager } from './components/categories/CategoryManager';
 import { AIInsights } from './components/insights/AIInsights';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { User } from './types';
-import { mockBudgetItems, aiInsights } from './data/mockData';
+import { aiInsights } from './data/mockData';
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
@@ -120,7 +121,7 @@ function App() {
             <>
               {/* Fixed Sidebar */}
               <Sidebar
-                isCollapsed={isSidebarCollapsed}
+                is Collapsed={isSidebarCollapsed}
                 onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
                 onLogout={handleLogout}
               />
@@ -141,7 +142,11 @@ function App() {
                     />
                     <Route 
                       path="/budget" 
-                      element={<BudgetOverview budgetItems={mockBudgetItems} />} 
+                      element={<BudgetOverview />} 
+                    />
+                    <Route 
+                      path="/categories" 
+                      element={<CategoryManager />} 
                     />
                     <Route 
                       path="/insights" 

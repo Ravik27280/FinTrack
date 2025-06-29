@@ -9,7 +9,8 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
-  Globe
+  Globe,
+  Tag
 } from 'lucide-react';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { useCurrency } from '../settings/CurrencySelector';
@@ -33,6 +34,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
     { id: 'transactions', label: 'Transactions', icon: CreditCard, path: '/transactions' },
     { id: 'budget', label: 'Budget', icon: Target, path: '/budget' },
+    { id: 'categories', label: 'Categories', icon: Tag, path: '/categories' },
     { id: 'insights', label: 'AI Insights', icon: Brain, path: '/insights' }
   ];
 

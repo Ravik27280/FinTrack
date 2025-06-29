@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { X, Target, DollarSign, Calendar, Tag, FileText, Palette, AlertTriangle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Target, DollarSign, Calendar, FileText, Palette, AlertTriangle } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { Card } from '../ui/Card';
+import { CategorySelector } from '../ui/CategorySelector';
 import { createBudget } from '../services/budgetService';
 
 interface CreateBudgetFormProps {
@@ -14,12 +15,6 @@ interface CreateBudgetFormProps {
 const predefinedColors = [
   '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', 
   '#EC4899', '#06B6D4', '#84CC16', '#F97316', '#6366F1'
-];
-
-const categories = [
-  'Food & Dining', 'Transportation', 'Shopping', 'Entertainment', 
-  'Bills & Utilities', 'Healthcare', 'Education', 'Travel', 
-  'Groceries', 'Gas', 'Insurance', 'Subscriptions', 'Other'
 ];
 
 const periods = [
@@ -51,7 +46,7 @@ export const CreateBudgetForm: React.FC<CreateBudgetFormProps> = ({
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Auto-calculate end date based on period and start date
-  React.useEffect(() => {
+  useEffect(() => {
     if (formData.startDate && formData.period) {
       const startDate = new Date(formData.startDate);
       let endDate = new Date(startDate);
@@ -209,37 +204,13 @@ export const CreateBudgetForm: React.FC<CreateBudgetFormProps> = ({
                 disabled={isLoading}
               />
 
-              <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
-                  Category
-                </label>
-                <div className="relative">
-                  <Tag className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <select
-                    value={formData.category}
-                    onChange={(e) => handleInputChange('category', e.target.value)}
-                    className={`
-                      block w-full rounded-xl border border-gray-300/50 dark:border-slate-600/50 pl-10 pr-3 py-2.5 
-                      text-gray-900 dark:text-white bg-white/50 dark:bg-slate-800/50 backdrop-blur-md
-                      focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/50 
-                      focus:ring-offset-2 focus:ring-offset-transparent focus:outline-none 
-                      transition-all duration-300
-                      ${errors.category ? 'border-red-500/50 focus:border-red-500/50 focus:ring-red-500/50' : ''}
-                    `}
-                    disabled={isLoading}
-                  >
-                    <option value="">Select a category</option>
-                    {categories.map((category) => (
-                      <option key={category} value={category} className="bg-white dark:bg-slate-800">
-                        {category}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                {errors.category && (
-                  <p className="text-sm text-red-500 dark:text-red-400">{errors.category}</p>
-                )}
-              </div>
+              <CategorySelector
+                value={formData.category}
+                onChange={(value) => handleInputChange('category', value)}
+                type="expense"
+                error={errors.category}
+                disabled={isLoading}
+              />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -367,7 +338,7 @@ export const CreateBudgetForm: React.FC<CreateBudgetFormProps> = ({
               value={formData.tags}
               onChange={(e) => handleInputChange('tags', e.target.value)}
               placeholder="e.g., essential, family, weekly (comma separated)"
-              icon={<Tag className="w-5 h-5 text-gray-400" />}
+              icon={<FileText className="w-5 h-5 text-gray-400" />}
               disabled={isLoading}
             />
 

@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Tag, Palette } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { Card } from '../ui/Card';
-import { createCategory } from '../services/categoryService';
+import { Category, updateCategory } from '../services/categoryService';
 
-interface AddCategoryFormProps {
+interface EditCategoryFormProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
-  defaultType?: 'income' | 'expense';
+  category: Category | null;
 }
 
 const predefinedColors = [
@@ -18,20 +18,32 @@ const predefinedColors = [
   '#14B8A6', '#F43F5E', '#8B5A2B', '#059669', '#7C3AED'
 ];
 
-export const AddCategoryForm: React.FC<AddCategoryFormProps> = ({
+export const EditCategoryForm: React.FC<EditCategoryFormProps> = ({
   isOpen,
   onClose,
   onSuccess,
-  defaultType = 'expense'
+  category
 }) => {
   const [formData, setFormData] = useState({
     name: '',
     color: predefinedColors[0],
-    type: defaultType as 'income' | 'expense' | 'both',
+    type: 'expense' as 'income' | 'expense' | 'both',
     isActive: true
   });
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Populate form when category changes
+  useEffect(() => {
+    if (category) {
+      setFormData({
+        name: category.name,
+        color: category.color,
+        type: category.type,
+        isActive: category.isActive
+      });
+    }
+  }, [category]);
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -53,32 +65,29 @@ export const AddCategoryForm: React.FC<AddCategoryFormProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateForm()) return;
+    if (!validateForm() || !category) return;
 
     setIsLoading(true);
 
     try {
-      await createCategory({
+      const categoryId = category._id || category.id;
+      if (!categoryId) {
+        throw new Error('Category ID not found');
+      }
+
+      await updateCategory(categoryId, {
         name: formData.name.trim(),
         color: formData.color,
         type: formData.type,
         isActive: formData.isActive
       });
 
-      // Reset form
-      setFormData({
-        name: '',
-        color: predefinedColors[0],
-        type: defaultType,
-        isActive: true
-      });
-
       onSuccess();
       onClose();
     } catch (error: any) {
-      console.error('Error creating category:', error);
+      console.error('Error updating category:', error);
       setErrors({ 
-        submit: error.response?.data?.error || 'Failed to create category. Please try again.' 
+        submit: error.response?.data?.error || 'Failed to update category. Please try again.' 
       });
     } finally {
       setIsLoading(false);
@@ -92,7 +101,7 @@ export const AddCategoryForm: React.FC<AddCategoryFormProps> = ({
     }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || !category) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-in fade-in duration-300">
@@ -107,8 +116,8 @@ export const AddCategoryForm: React.FC<AddCategoryFormProps> = ({
           </button>
 
           <div className="mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Add Category</h2>
-            <p className="text-gray-600 dark:text-gray-300">Create a new category for your transactions</p>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Edit Category</h2>
+            <p className="text-gray-600 dark:text-gray-300">Update category details</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -126,7 +135,7 @@ export const AddCategoryForm: React.FC<AddCategoryFormProps> = ({
               placeholder="Enter category name"
               icon={<Tag className="w-5 h-5 text-gray-400" />}
               error={errors.name}
-              disabled={isLoading}
+              disabled={isLoading || category.isDefault}
             />
 
             <div className="space-y-1">
@@ -142,7 +151,7 @@ export const AddCategoryForm: React.FC<AddCategoryFormProps> = ({
                       ? 'bg-red-500 text-white shadow-lg shadow-red-500/25'
                       : 'bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700'
                   }`}
-                  disabled={isLoading}
+                  disabled={isLoading || category.isDefault}
                 >
                   Expense
                 </button>
@@ -154,7 +163,7 @@ export const AddCategoryForm: React.FC<AddCategoryFormProps> = ({
                       ? 'bg-green-500 text-white shadow-lg shadow-green-500/25'
                       : 'bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700'
                   }`}
-                  disabled={isLoading}
+                  disabled={isLoading || category.isDefault}
                 >
                   Income
                 </button>
@@ -166,7 +175,7 @@ export const AddCategoryForm: React.FC<AddCategoryFormProps> = ({
                       ? 'bg-purple-500 text-white shadow-lg shadow-purple-500/25'
                       : 'bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700'
                   }`}
-                  disabled={isLoading}
+                  disabled={isLoading || category.isDefault}
                 >
                   Both
                 </button>
@@ -199,6 +208,28 @@ export const AddCategoryForm: React.FC<AddCategoryFormProps> = ({
               )}
             </div>
 
+            <div className="flex items-center space-x-3">
+              <input
+                type="checkbox"
+                id="isActive"
+                checked={formData.isActive}
+                onChange={(e) => handleInputChange('isActive', e.target.checked)}
+                className="rounded border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-blue-600 focus:ring-blue-500/50 focus:ring-offset-0"
+                disabled={isLoading || category.isDefault}
+              />
+              <label htmlFor="isActive" className="text-sm text-gray-700 dark:text-gray-200">
+                Active category
+              </label>
+            </div>
+
+            {category.isDefault && (
+              <div className="p-3 bg-blue-50 dark:bg-blue-500/20 border border-blue-200 dark:border-blue-500/30 rounded-xl">
+                <p className="text-blue-600 dark:text-blue-400 text-sm">
+                  This is a default category. Only the color and active status can be modified.
+                </p>
+              </div>
+            )}
+
             <div className="flex items-center space-x-3 p-4 bg-gray-50 dark:bg-slate-800/50 rounded-xl">
               <div 
                 className="w-8 h-8 rounded-xl shadow-lg" 
@@ -209,7 +240,7 @@ export const AddCategoryForm: React.FC<AddCategoryFormProps> = ({
                   {formData.name || 'Category Name'}
                 </p>
                 <p className="text-sm text-gray-500 dark:text-gray-400 capitalize">
-                  {formData.type}
+                  {formData.type} • {formData.isActive ? 'Active' : 'Inactive'}
                 </p>
               </div>
             </div>
@@ -229,7 +260,7 @@ export const AddCategoryForm: React.FC<AddCategoryFormProps> = ({
                 className="flex-1"
                 disabled={isLoading}
               >
-                {isLoading ? 'Adding...' : 'Add Category'}
+                {isLoading ? 'Updating...' : 'Update Category'}
               </Button>
             </div>
           </form>

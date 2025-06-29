@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { X, DollarSign, Calendar, Tag, FileText, Plus } from 'lucide-react';
+import { X, DollarSign, Calendar, FileText } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { Card } from '../ui/Card';
+import { CategorySelector } from '../ui/CategorySelector';
 import { addTransaction } from '../services/transactionService';
 
 interface AddTransactionFormProps {
@@ -26,11 +27,6 @@ export const AddTransactionForm: React.FC<AddTransactionFormProps> = ({
   });
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-
-  const categories = {
-    expense: ['Food & Dining', 'Transportation', 'Shopping', 'Entertainment', 'Bills & Utilities', 'Healthcare', 'Education', 'Travel', 'Other'],
-    income: ['Salary', 'Freelance', 'Investment', 'Business', 'Gift', 'Other']
-  };
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -193,37 +189,13 @@ export const AddTransactionForm: React.FC<AddTransactionFormProps> = ({
               </div>
             </div>
 
-            <div className="space-y-1">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
-                Category
-              </label>
-              <div className="relative">
-                <Tag className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <select
-                  value={formData.category}
-                  onChange={(e) => handleInputChange('category', e.target.value)}
-                  className={`
-                    block w-full rounded-xl border border-gray-300/50 dark:border-slate-600/50 pl-10 pr-3 py-2.5 
-                    text-gray-900 dark:text-white bg-white/50 dark:bg-slate-800/50 backdrop-blur-md
-                    focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/50 
-                    focus:ring-offset-2 focus:ring-offset-transparent focus:outline-none 
-                    transition-all duration-300
-                    ${errors.category ? 'border-red-500/50 focus:border-red-500/50 focus:ring-red-500/50' : ''}
-                  `}
-                  disabled={isLoading}
-                >
-                  <option value="">Select a category</option>
-                  {categories[formData.type].map((category) => (
-                    <option key={category} value={category} className="bg-white dark:bg-slate-800">
-                      {category}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              {errors.category && (
-                <p className="text-sm text-red-500 dark:text-red-400">{errors.category}</p>
-              )}
-            </div>
+            <CategorySelector
+              value={formData.category}
+              onChange={(value) => handleInputChange('category', value)}
+              type={formData.type}
+              error={errors.category}
+              disabled={isLoading}
+            />
 
             <Input
               label="Date"

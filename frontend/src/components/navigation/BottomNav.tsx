@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, CreditCard, Target, Brain } from 'lucide-react';
+import { LayoutDashboard, CreditCard, Target, Brain, Tag } from 'lucide-react';
 
 export const BottomNav: React.FC = () => {
   const navigate = useNavigate();
@@ -10,6 +10,7 @@ export const BottomNav: React.FC = () => {
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
     { id: 'transactions', label: 'Transactions', icon: CreditCard, path: '/transactions' },
     { id: 'budget', label: 'Budget', icon: Target, path: '/budget' },
+    { id: 'categories', label: 'Categories', icon: Tag, path: '/categories' },
     { id: 'insights', label: 'Insights', icon: Brain, path: '/insights' }
   ];
 
