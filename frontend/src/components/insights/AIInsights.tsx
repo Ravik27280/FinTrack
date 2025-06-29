@@ -12,7 +12,9 @@ import {
   DollarSign,
   Calendar,
   Zap,
-  RefreshCw
+  RefreshCw,
+  Plus,
+  Edit3
 } from 'lucide-react';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
@@ -26,19 +28,42 @@ import {
   getFinancialHealth,
   getSpendingPredictions
 } from '../services/aiInsightsService';
+import { CreateBudgetForm } from '../forms/CreateBudgetForm';
+import { EditBudgetForm } from '../forms/EditBudgetForm';
+import { TransactionDetailsModal } from './TransactionDetailsModal';
+import { BudgetRecommendationModal } from './BudgetRecommendationModal';
+import { SavingsOpportunityModal } from './SavingsOpportunityModal';
+import { SpendingForecastModal } from './SpendingForecastModal';
+import { getBudgets, Budget } from '../services/budgetService';
 
 export const AIInsights: React.FC = () => {
   const [insightsData, setInsightsData] = useState<AIInsightsOverview | null>(null);
+  const [budgets, setBudgets] = useState<Budget[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'overview' | 'analysis' | 'recommendations' | 'health' | 'predictions'>('overview');
   const [refreshing, setRefreshing] = useState(false);
+  
+  // Modal states
+  const [isCreateBudgetOpen, setIsCreateBudgetOpen] = useState(false);
+  const [isEditBudgetOpen, setIsEditBudgetOpen] = useState(false);
+  const [editingBudget, setEditingBudget] = useState<Budget | null>(null);
+  const [isTransactionDetailsOpen, setIsTransactionDetailsOpen] = useState(false);
+  const [selectedInsight, setSelectedInsight] = useState<AIInsight | null>(null);
+  const [isBudgetRecommendationOpen, setIsBudgetRecommendationOpen] = useState(false);
+  const [isSavingsOpportunityOpen, setIsSavingsOpportunityOpen] = useState(false);
+  const [isSpendingForecastOpen, setIsSpendingForecastOpen] = useState(false);
+  
   const { formatAmount } = useCurrency();
 
   const fetchInsights = async () => {
     try {
       setIsLoading(true);
-      const data = await getAIInsightsOverview();
-      setInsightsData(data);
+      const [insightsResponse, budgetsResponse] = await Promise.all([
+        getAIInsightsOverview(),
+        getBudgets()
+      ]);
+      setInsightsData(insightsResponse);
+      setBudgets(budgetsResponse);
     } catch (error) {
       console.error('Error fetching AI insights:', error);
       // Set fallback data if API fails
@@ -108,6 +133,50 @@ export const AIInsights: React.FC = () => {
     setRefreshing(true);
     await fetchInsights();
     setRefreshing(false);
+  };
+
+  const handleInsightAction = (insight: AIInsight) => {
+    setSelectedInsight(insight);
+    
+    switch (insight.id) {
+      case 'unusual-spending':
+        setIsTransactionDetailsOpen(true);
+        break;
+      case 'budget-recommendations':
+        setIsBudgetRecommendationOpen(true);
+        break;
+      case 'financial-health':
+        setActiveTab('health');
+        break;
+      case 'savings-opportunity':
+        setIsSavingsOpportunityOpen(true);
+        break;
+      case 'spending-prediction':
+        setIsSpendingForecastOpen(true);
+        break;
+      default:
+        // Generic action - could open a details modal
+        console.log('Action for insight:', insight.title);
+    }
+  };
+
+  const handleBudgetRecommendationAction = (recommendation: any) => {
+    if (recommendation.type === 'create_budget') {
+      setIsCreateBudgetOpen(true);
+    } else {
+      // Find existing budget and edit it
+      const existingBudget = budgets.find(b => b.category === recommendation.category);
+      if (existingBudget) {
+        setEditingBudget(existingBudget);
+        setIsEditBudgetOpen(true);
+      } else {
+        setIsCreateBudgetOpen(true);
+      }
+    }
+  };
+
+  const handleFormSuccess = () => {
+    fetchInsights();
   };
 
   useEffect(() => {
@@ -326,6 +395,7 @@ export const AIInsights: React.FC = () => {
                   <Button 
                     variant="glass" 
                     className="w-full justify-between group hover:bg-blue-50 dark:hover:bg-blue-500/20 hover:border-blue-300 dark:hover:border-blue-500/30"
+                    onClick={() => handleInsightAction(insight)}
                   >
                     <span>{insight.actionText}</span>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -425,8 +495,22 @@ export const AIInsights: React.FC = () => {
                       </div>
                     </div>
                     
-                    <Button variant="glass" className="w-full">
-                      Apply Recommendation
+                    <Button 
+                      variant="glass" 
+                      className="w-full"
+                      onClick={() => handleBudgetRecommendationAction(rec)}
+                    >
+                      {rec.type === 'create_budget' ? (
+                        <>
+                          <Plus className="w-4 h-4 mr-2" />
+                          Create Budget
+                        </>
+                      ) : (
+                        <>
+                          <Edit3 className="w-4 h-4 mr-2" />
+                          Adjust Budget
+                        </>
+                      )}
                     </Button>
                   </div>
                 </Card>
@@ -610,6 +694,65 @@ export const AIInsights: React.FC = () => {
           <Button>Upgrade to Premium</Button>
         </div>
       </Card>
+
+      {/* Modals */}
+      <CreateBudgetForm
+        isOpen={isCreateBudgetOpen}
+        onClose={() => setIsCreateBudgetOpen(false)}
+        onSuccess={handleFormSuccess}
+      />
+
+      <EditBudgetForm
+        isOpen={isEditBudgetOpen}
+        onClose={() => {
+          setIsEditBudgetOpen(false);
+          setEditingBudget(null);
+        }}
+        onSuccess={handleFormSuccess}
+        budget={editingBudget}
+      />
+
+      <TransactionDetailsModal
+        isOpen={isTransactionDetailsOpen}
+        onClose={() => {
+          setIsTransactionDetailsOpen(false);
+          setSelectedInsight(null);
+        }}
+        insight={selectedInsight}
+        formatAmount={formatAmount}
+      />
+
+      <BudgetRecommendationModal
+        isOpen={isBudgetRecommendationOpen}
+        onClose={() => {
+          setIsBudgetRecommendationOpen(false);
+          setSelectedInsight(null);
+        }}
+        insight={selectedInsight}
+        formatAmount={formatAmount}
+        onApplyRecommendation={handleBudgetRecommendationAction}
+      />
+
+      <SavingsOpportunityModal
+        isOpen={isSavingsOpportunityOpen}
+        onClose={() => {
+          setIsSavingsOpportunityOpen(false);
+          setSelectedInsight(null);
+        }}
+        insight={selectedInsight}
+        formatAmount={formatAmount}
+      />
+
+      <SpendingForecastModal
+        isOpen={isSpendingForecastOpen}
+        onClose={() => {
+          setIsSpendingForecastOpen(false);
+          setSelectedInsight(null);
+        }}
+        insight={selectedInsight}
+        formatAmount={formatAmount}
+        predictions={insightsData.predictions}
+      />
     </div>
   );
 };
