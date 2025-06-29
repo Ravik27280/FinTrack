@@ -13,13 +13,12 @@ interface AdvancedLineChartProps {
   height?: number;
   showBalance?: boolean;
   title?: string;
-  formatAmount?: (value: number) => string; // <-- Add this
+  formatAmount?: (value: number) => string;
 }
-
 
 export const AdvancedLineChart: React.FC<AdvancedLineChartProps> = ({ 
   data, 
-  height = 250, 
+  height = 280, 
   showBalance = true,
   title = "Financial Trend",
   formatAmount
@@ -35,8 +34,9 @@ export const AdvancedLineChart: React.FC<AdvancedLineChartProps> = ({
   const minValue = Math.min(0, minBalance);
   const range = maxValue - minValue;
   
-  const padding = 50;
-  const chartWidth = 100 - (padding * 2 / 5); // Use percentage for responsive width
+  // Increased padding for better label visibility
+  const padding = 80;
+  const chartWidth = 100 - (padding * 2 / 5);
   const chartHeight = height - padding * 2;
   
   const getY = (value: number) => {
@@ -76,11 +76,11 @@ export const AdvancedLineChart: React.FC<AdvancedLineChartProps> = ({
       </div>
 
       <div className="w-full overflow-hidden">
-        <div className="w-full" style={{ minWidth: '400px' }}>
+        <div className="w-full" style={{ minWidth: '500px' }}>
           <svg 
             width="100%" 
             height={height} 
-            viewBox={`0 0 500 ${height}`}
+            viewBox={`0 0 600 ${height}`}
             preserveAspectRatio="xMidYMid meet"
             className="w-full h-auto"
           >
@@ -98,19 +98,19 @@ export const AdvancedLineChart: React.FC<AdvancedLineChartProps> = ({
                 <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.05" />
               </linearGradient>
               
-              <pattern id="grid" width="40" height="30" patternUnits="userSpaceOnUse">
-                <path d="M 40 0 L 0 0 0 30" fill="none" stroke="rgba(156, 163, 175, 0.2)" strokeWidth="1"/>
+              <pattern id="grid" width="50" height="40" patternUnits="userSpaceOnUse">
+                <path d="M 50 0 L 0 0 0 40" fill="none" stroke="rgba(156, 163, 175, 0.2)" strokeWidth="1"/>
               </pattern>
             </defs>
 
             {/* Grid background */}
-            <rect width="500" height={height} fill="url(#grid)" />
+            <rect width="600" height={height} fill="url(#grid)" />
 
             {/* Zero line */}
             <line
               x1={padding}
               y1={getY(0)}
-              x2={500 - padding}
+              x2={600 - padding}
               y2={getY(0)}
               stroke="rgba(107, 114, 128, 0.3)"
               strokeWidth="1"
@@ -120,21 +120,21 @@ export const AdvancedLineChart: React.FC<AdvancedLineChartProps> = ({
             {/* Generate paths */}
             {(() => {
               const incomePoints = data.map((item, index) => ({
-                x: getX(index, 500),
+                x: getX(index, 600),
                 y: getY(item.income),
                 value: item.income,
                 date: item.date
               }));
 
               const expensePoints = data.map((item, index) => ({
-                x: getX(index, 500),
+                x: getX(index, 600),
                 y: getY(Math.abs(item.expense)),
                 value: Math.abs(item.expense),
                 date: item.date
               }));
 
               const balancePoints = data.map((item, index) => ({
-                x: getX(index, 500),
+                x: getX(index, 600),
                 y: getY(item.balance),
                 value: item.balance,
                 date: item.date
@@ -165,7 +165,7 @@ export const AdvancedLineChart: React.FC<AdvancedLineChartProps> = ({
                     d={createPath(incomePoints)}
                     fill="none"
                     stroke="#10B981"
-                    strokeWidth="2"
+                    strokeWidth="3"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   />
@@ -173,7 +173,7 @@ export const AdvancedLineChart: React.FC<AdvancedLineChartProps> = ({
                     d={createPath(expensePoints)}
                     fill="none"
                     stroke="#EF4444"
-                    strokeWidth="2"
+                    strokeWidth="3"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   />
@@ -182,7 +182,7 @@ export const AdvancedLineChart: React.FC<AdvancedLineChartProps> = ({
                       d={createPath(balancePoints)}
                       fill="none"
                       stroke="#3B82F6"
-                      strokeWidth="2"
+                      strokeWidth="3"
                       strokeLinecap="round"
                       strokeLinejoin="round"
                     />
@@ -194,9 +194,9 @@ export const AdvancedLineChart: React.FC<AdvancedLineChartProps> = ({
                       key={`income-${index}`}
                       cx={point.x}
                       cy={point.y}
-                      r="3"
+                      r="4"
                       fill="#10B981"
-                      className="hover:r-5 transition-all duration-300 cursor-pointer"
+                      className="hover:r-6 transition-all duration-300 cursor-pointer"
                     />
                   ))}
 
@@ -205,9 +205,9 @@ export const AdvancedLineChart: React.FC<AdvancedLineChartProps> = ({
                       key={`expense-${index}`}
                       cx={point.x}
                       cy={point.y}
-                      r="3"
+                      r="4"
                       fill="#EF4444"
-                      className="hover:r-5 transition-all duration-300 cursor-pointer"
+                      className="hover:r-6 transition-all duration-300 cursor-pointer"
                     />
                   ))}
 
@@ -216,9 +216,9 @@ export const AdvancedLineChart: React.FC<AdvancedLineChartProps> = ({
                       key={`balance-${index}`}
                       cx={point.x}
                       cy={point.y}
-                      r="3"
+                      r="4"
                       fill="#3B82F6"
-                      className="hover:r-5 transition-all duration-300 cursor-pointer"
+                      className="hover:r-6 transition-all duration-300 cursor-pointer"
                     />
                   ))}
 
@@ -226,8 +226,8 @@ export const AdvancedLineChart: React.FC<AdvancedLineChartProps> = ({
                   {data.map((item, index) => (
                     <text
                       key={index}
-                      x={getX(index, 500)}
-                      y={height - 10}
+                      x={getX(index, 600)}
+                      y={height - 15}
                       textAnchor="middle"
                       className="text-xs fill-gray-600 dark:fill-gray-400"
                     >
@@ -235,17 +235,17 @@ export const AdvancedLineChart: React.FC<AdvancedLineChartProps> = ({
                     </text>
                   ))}
 
-                  {/* Y-axis labels */}
-                  {[0, maxValue * 0.5, maxValue].map((value, index) => (
+                  {/* Y-axis labels with better spacing */}
+                  {[0, maxValue * 0.25, maxValue * 0.5, maxValue * 0.75, maxValue].map((value, index) => (
                     <text
                       key={index}
-                      x={padding - 4}
+                      x={padding - 10}
                       y={getY(value)}
                       textAnchor="end"
                       className="text-xs fill-gray-600 dark:fill-gray-400"
                       dominantBaseline="middle"
                     >
-                      {formatAmount ? formatAmount(value) : `$${(value / 1000).toFixed(0)}k`}
+                      {formatAmount ? formatAmount(value) : `${(value / 1000).toFixed(0)}k`}
                     </text>
                   ))}
                 </>

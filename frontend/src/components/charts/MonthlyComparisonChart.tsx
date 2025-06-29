@@ -60,10 +60,10 @@ export const MonthlyComparisonChart: React.FC<MonthlyComparisonChartProps> = ({
     ...monthlyData.map(d => Math.max(d.income, d.expense))
   );
   
-  const height = 280;
-  const padding = 60;
+  const height = 320;
+  const padding = 80; // Increased padding for better label visibility
   const chartHeight = height - padding * 2;
-  const barWidth = 35;
+  const barWidth = 40; // Slightly wider bars
   
   const getY = (value: number) => {
     return padding + chartHeight - (value / maxValue) * chartHeight;
@@ -73,7 +73,7 @@ export const MonthlyComparisonChart: React.FC<MonthlyComparisonChartProps> = ({
     const usableWidth = totalWidth - padding * 2;
     const groupWidth = usableWidth / monthlyData.length;
     const groupCenter = padding + (index * groupWidth) + (groupWidth / 2);
-    return groupCenter + (barIndex - 0.5) * (barWidth + 8);
+    return groupCenter + (barIndex - 0.5) * (barWidth + 10);
   };
 
   return (
@@ -81,11 +81,11 @@ export const MonthlyComparisonChart: React.FC<MonthlyComparisonChartProps> = ({
       <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">{title}</h3>
       
       <div className="w-full overflow-hidden">
-        <div className="w-full" style={{ minWidth: '500px' }}>
+        <div className="w-full" style={{ minWidth: '600px' }}>
           <svg 
             width="100%" 
             height={height} 
-            viewBox={`0 0 600 ${height}`}
+            viewBox={`0 0 700 ${height}`}
             preserveAspectRatio="xMidYMid meet"
             className="w-full h-auto"
           >
@@ -99,13 +99,13 @@ export const MonthlyComparisonChart: React.FC<MonthlyComparisonChartProps> = ({
                 <stop offset="100%" stopColor="#DC2626" />
               </linearGradient>
               
-              <pattern id="comparisonGrid" width="50" height="40" patternUnits="userSpaceOnUse">
-                <path d="M 50 0 L 0 0 0 40" fill="none" stroke="rgba(156, 163, 175, 0.2)" strokeWidth="1"/>
+              <pattern id="comparisonGrid" width="60" height="50" patternUnits="userSpaceOnUse">
+                <path d="M 60 0 L 0 0 0 50" fill="none" stroke="rgba(156, 163, 175, 0.2)" strokeWidth="1"/>
               </pattern>
             </defs>
 
             {/* Grid background */}
-            <rect width="600" height={height} fill="url(#comparisonGrid)" />
+            <rect width="700" height={height} fill="url(#comparisonGrid)" />
 
             {/* Bars */}
             {monthlyData.map((data, index) => {
@@ -116,30 +116,30 @@ export const MonthlyComparisonChart: React.FC<MonthlyComparisonChartProps> = ({
                 <g key={index}>
                   {/* Income bar */}
                   <rect
-                    x={getX(index, 0, 600)}
+                    x={getX(index, 0, 700)}
                     y={getY(data.income)}
                     width={barWidth}
                     height={incomeHeight}
                     fill="url(#incomeBarGradient)"
-                    rx="6"
+                    rx="8"
                     className="hover:opacity-80 transition-opacity duration-300 cursor-pointer"
                   />
                   
                   {/* Expense bar */}
                   <rect
-                    x={getX(index, 1, 600)}
+                    x={getX(index, 1, 700)}
                     y={getY(data.expense)}
                     width={barWidth}
                     height={expenseHeight}
                     fill="url(#expenseBarGradient)"
-                    rx="6"
+                    rx="8"
                     className="hover:opacity-80 transition-opacity duration-300 cursor-pointer"
                   />
                   
                   {/* Month label */}
                   <text
-                    x={getX(index, 0.5, 600) + barWidth / 2}
-                    y={height - 15}
+                    x={getX(index, 0.5, 700) + barWidth / 2}
+                    y={height - 20}
                     textAnchor="middle"
                     className="text-sm fill-gray-700 dark:fill-gray-300 font-medium"
                   >
@@ -148,8 +148,8 @@ export const MonthlyComparisonChart: React.FC<MonthlyComparisonChartProps> = ({
                   
                   {/* Net value */}
                   <text
-                    x={getX(index, 0.5, 600) + barWidth / 2}
-                    y={height - 35}
+                    x={getX(index, 0.5, 700) + barWidth / 2}
+                    y={height - 40}
                     textAnchor="middle"
                     className={`text-xs font-medium ${
                       data.net >= 0 
@@ -163,8 +163,8 @@ export const MonthlyComparisonChart: React.FC<MonthlyComparisonChartProps> = ({
               );
             })}
 
-            {/* Y-axis labels with currency formatting */}
-            {[0, maxValue * 0.25, maxValue * 0.5, maxValue * 0.75, maxValue].map((value, index) => (
+            {/* Y-axis labels with better spacing and formatting */}
+            {[0, maxValue * 0.2, maxValue * 0.4, maxValue * 0.6, maxValue * 0.8, maxValue].map((value, index) => (
               <text
                 key={index}
                 x={padding - 15}
@@ -176,6 +176,26 @@ export const MonthlyComparisonChart: React.FC<MonthlyComparisonChartProps> = ({
                 {formatAmount(value)}
               </text>
             ))}
+
+            {/* Y-axis line */}
+            <line
+              x1={padding}
+              y1={padding}
+              x2={padding}
+              y2={height - padding}
+              stroke="rgba(156, 163, 175, 0.3)"
+              strokeWidth="1"
+            />
+
+            {/* X-axis line */}
+            <line
+              x1={padding}
+              y1={height - padding}
+              x2={700 - padding}
+              y2={height - padding}
+              stroke="rgba(156, 163, 175, 0.3)"
+              strokeWidth="1"
+            />
           </svg>
         </div>
 

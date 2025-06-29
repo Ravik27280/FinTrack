@@ -89,8 +89,8 @@ export const SpendingTrendChart: React.FC<SpendingTrendChartProps> = ({
   const maxAmount = Math.max(...trendData.map(d => d.amount));
   const avgAmount = trendData.reduce((sum, d) => sum + d.amount, 0) / trendData.length;
   
-  const height = 220;
-  const padding = 50;
+  const height = 260;
+  const padding = 70; // Increased padding for better label visibility
   const chartHeight = height - padding * 2;
   
   const getX = (index: number, totalWidth: number) => {
@@ -144,11 +144,11 @@ export const SpendingTrendChart: React.FC<SpendingTrendChartProps> = ({
       </div>
 
       <div className="w-full overflow-hidden">
-        <div className="w-full" style={{ minWidth: '400px' }}>
+        <div className="w-full" style={{ minWidth: '500px' }}>
           <svg 
             width="100%" 
             height={height} 
-            viewBox={`0 0 500 ${height}`}
+            viewBox={`0 0 600 ${height}`}
             preserveAspectRatio="xMidYMid meet"
             className="w-full h-auto"
           >
@@ -158,19 +158,19 @@ export const SpendingTrendChart: React.FC<SpendingTrendChartProps> = ({
                 <stop offset="100%" stopColor="#EF4444" stopOpacity="0.05" />
               </linearGradient>
               
-              <pattern id="spendingGrid" width="40" height="30" patternUnits="userSpaceOnUse">
-                <path d="M 40 0 L 0 0 0 30" fill="none" stroke="rgba(156, 163, 175, 0.2)" strokeWidth="1"/>
+              <pattern id="spendingGrid" width="50" height="40" patternUnits="userSpaceOnUse">
+                <path d="M 50 0 L 0 0 0 40" fill="none" stroke="rgba(156, 163, 175, 0.2)" strokeWidth="1"/>
               </pattern>
             </defs>
 
             {/* Grid background */}
-            <rect width="500" height={height} fill="url(#spendingGrid)" />
+            <rect width="600" height={height} fill="url(#spendingGrid)" />
 
             {/* Average line */}
             <line
               x1={padding}
               y1={getY(avgAmount)}
-              x2={500 - padding}
+              x2={600 - padding}
               y2={getY(avgAmount)}
               stroke="#F59E0B"
               strokeWidth="2"
@@ -181,7 +181,7 @@ export const SpendingTrendChart: React.FC<SpendingTrendChartProps> = ({
             {/* Generate paths */}
             {(() => {
               const points = trendData.map((item, index) => ({
-                x: getX(index, 500),
+                x: getX(index, 600),
                 y: getY(item.amount),
                 ...item
               }));
@@ -213,9 +213,9 @@ export const SpendingTrendChart: React.FC<SpendingTrendChartProps> = ({
                       key={index}
                       cx={point.x}
                       cy={point.y}
-                      r="4"
+                      r="5"
                       fill="#EF4444"
-                      className="hover:r-6 transition-all duration-300 cursor-pointer"
+                      className="hover:r-7 transition-all duration-300 cursor-pointer"
                     />
                   ))}
 
@@ -223,8 +223,8 @@ export const SpendingTrendChart: React.FC<SpendingTrendChartProps> = ({
                   {trendData.map((item, index) => (
                     <text
                       key={index}
-                      x={getX(index, 500)}
-                      y={height - 10}
+                      x={getX(index, 600)}
+                      y={height - 15}
                       textAnchor="middle"
                       className="text-xs fill-gray-600 dark:fill-gray-400"
                     >
@@ -232,8 +232,8 @@ export const SpendingTrendChart: React.FC<SpendingTrendChartProps> = ({
                     </text>
                   ))}
 
-                  {/* Y-axis labels with currency formatting */}
-                  {[0, maxAmount * 0.5, maxAmount].map((value, index) => (
+                  {/* Y-axis labels with better spacing */}
+                  {[0, maxAmount * 0.25, maxAmount * 0.5, maxAmount * 0.75, maxAmount].map((value, index) => (
                     <text
                       key={index}
                       x={padding - 15}
@@ -245,6 +245,24 @@ export const SpendingTrendChart: React.FC<SpendingTrendChartProps> = ({
                       {formatAmount(value)}
                     </text>
                   ))}
+
+                  {/* Axis lines */}
+                  <line
+                    x1={padding}
+                    y1={padding}
+                    x2={padding}
+                    y2={height - padding}
+                    stroke="rgba(156, 163, 175, 0.3)"
+                    strokeWidth="1"
+                  />
+                  <line
+                    x1={padding}
+                    y1={height - padding}
+                    x2={600 - padding}
+                    y2={height - padding}
+                    stroke="rgba(156, 163, 175, 0.3)"
+                    strokeWidth="1"
+                  />
                 </>
               );
             })()}

@@ -22,10 +22,10 @@ export const BudgetAnalyticsChart: React.FC<BudgetAnalyticsChartProps> = ({
     .map(([category, data]) => ({ category, ...data }))
     .sort((a, b) => b.spent - a.spent);
 
-  const height = 200;
-  const padding = 40;
+  const height = 240;
+  const padding = 80; // Increased padding for better label visibility
   const chartHeight = height - padding * 2;
-  const barWidth = 25;
+  const barWidth = 30;
 
   const getY = (value: number) => {
     return padding + chartHeight - (value / maxValue) * chartHeight;
@@ -35,7 +35,7 @@ export const BudgetAnalyticsChart: React.FC<BudgetAnalyticsChartProps> = ({
     const usableWidth = totalWidth - padding * 2;
     const groupWidth = usableWidth / monthlyTrend.length;
     const groupCenter = padding + (index * groupWidth) + (groupWidth / 2);
-    return groupCenter + (barIndex - 0.5) * (barWidth + 3);
+    return groupCenter + (barIndex - 0.5) * (barWidth + 5);
   };
 
   return (
@@ -47,11 +47,11 @@ export const BudgetAnalyticsChart: React.FC<BudgetAnalyticsChartProps> = ({
           
           <div className="w-full">
             <div className="w-full overflow-x-auto">
-              <div style={{ minWidth: '500px', width: '100%' }}>
+              <div style={{ minWidth: '600px', width: '100%' }}>
                 <svg 
                   width="100%" 
                   height={height} 
-                  viewBox={`0 0 500 ${height}`}
+                  viewBox={`0 0 600 ${height}`}
                   preserveAspectRatio="xMidYMid meet"
                   className="w-full"
                 >
@@ -65,13 +65,13 @@ export const BudgetAnalyticsChart: React.FC<BudgetAnalyticsChartProps> = ({
                       <stop offset="100%" stopColor="#DC2626" />
                     </linearGradient>
                     
-                    <pattern id="budgetGrid" width="40" height="20" patternUnits="userSpaceOnUse">
-                      <path d="M 40 0 L 0 0 0 20" fill="none" stroke="rgba(156, 163, 175, 0.2)" strokeWidth="1"/>
+                    <pattern id="budgetGrid" width="50" height="30" patternUnits="userSpaceOnUse">
+                      <path d="M 50 0 L 0 0 0 30" fill="none" stroke="rgba(156, 163, 175, 0.2)" strokeWidth="1"/>
                     </pattern>
                   </defs>
 
                   {/* Grid background */}
-                  <rect width="500" height={height} fill="url(#budgetGrid)" />
+                  <rect width="600" height={height} fill="url(#budgetGrid)" />
 
                   {/* Bars */}
                   {monthlyTrend.map((data, index) => {
@@ -82,30 +82,30 @@ export const BudgetAnalyticsChart: React.FC<BudgetAnalyticsChartProps> = ({
                       <g key={index}>
                         {/* Budget bar */}
                         <rect
-                          x={getX(index, 0, 500)}
+                          x={getX(index, 0, 600)}
                           y={getY(data.budgeted)}
                           width={barWidth}
                           height={budgetHeight}
                           fill="url(#budgetBarGradient)"
-                          rx="3"
+                          rx="4"
                           className="hover:opacity-80 transition-opacity duration-300 cursor-pointer"
                         />
                         
                         {/* Spent bar */}
                         <rect
-                          x={getX(index, 1, 500)}
+                          x={getX(index, 1, 600)}
                           y={getY(data.spent)}
                           width={barWidth}
                           height={spentHeight}
                           fill="url(#spentBarGradient)"
-                          rx="3"
+                          rx="4"
                           className="hover:opacity-80 transition-opacity duration-300 cursor-pointer"
                         />
                         
                         {/* Month label */}
                         <text
-                          x={getX(index, 0.5, 500) + barWidth / 2}
-                          y={height - 10}
+                          x={getX(index, 0.5, 600) + barWidth / 2}
+                          y={height - 15}
                           textAnchor="middle"
                           className="text-xs fill-gray-700 dark:fill-gray-300 font-medium"
                         >
@@ -115,19 +115,37 @@ export const BudgetAnalyticsChart: React.FC<BudgetAnalyticsChartProps> = ({
                     );
                   })}
 
-                  {/* Y-axis labels */}
-                  {[0, maxValue * 0.5, maxValue].map((value, index) => (
+                  {/* Y-axis labels with better spacing */}
+                  {[0, maxValue * 0.25, maxValue * 0.5, maxValue * 0.75, maxValue].map((value, index) => (
                     <text
                       key={index}
-                      x={padding - 10}
+                      x={padding - 15}
                       y={getY(value)}
                       textAnchor="end"
                       className="text-xs fill-gray-600 dark:fill-gray-400"
                       dominantBaseline="middle"
                     >
-                      ${(value / 1000).toFixed(0)}k
+                      {formatAmount(value)}
                     </text>
                   ))}
+
+                  {/* Axis lines */}
+                  <line
+                    x1={padding}
+                    y1={padding}
+                    x2={padding}
+                    y2={height - padding}
+                    stroke="rgba(156, 163, 175, 0.3)"
+                    strokeWidth="1"
+                  />
+                  <line
+                    x1={padding}
+                    y1={height - padding}
+                    x2={600 - padding}
+                    y2={height - padding}
+                    stroke="rgba(156, 163, 175, 0.3)"
+                    strokeWidth="1"
+                  />
                 </svg>
               </div>
             </div>

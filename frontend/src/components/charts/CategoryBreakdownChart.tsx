@@ -75,7 +75,7 @@ export const CategoryBreakdownChart: React.FC<CategoryBreakdownChartProps> = ({
     }))
     .sort((a, b) => b.amount - a.amount);
 
-  const size = 200;
+  const size = 240; // Increased size for better visibility
   const center = size / 2;
   const radius = size * 0.4;
   
