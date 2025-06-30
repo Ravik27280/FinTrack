@@ -1,4 +1,5 @@
 import React from 'react';
+import badge from '../../public/black_circle_360x360.png'
 
 interface BoltBadgeProps {
   className?: string;
@@ -14,7 +15,7 @@ export const BoltBadge: React.FC<BoltBadgeProps> = ({
   showText = false
 }) => {
   const sizes = {
-    sm: 'w-8 h-8',
+    sm: 'w-12 h-12',
     md: 'w-12 h-12',
     lg: 'w-16 h-16'
   };
@@ -32,7 +33,7 @@ export const BoltBadge: React.FC<BoltBadgeProps> = ({
           title="Built with Bolt.new - Click to visit"
         >
           <img 
-            src="/black_circle_360x360.png"
+            src={badge}
             alt="Powered by Bolt.new"
             className="w-full h-full object-contain drop-shadow-lg hover:drop-shadow-xl transition-all duration-300"
           />
