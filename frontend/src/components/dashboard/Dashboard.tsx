@@ -4,6 +4,7 @@ import { StatsCards } from './StatsCards';
 import { RecentTransactions } from './RecentTransactions';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
+import { BoltBadge } from '../ui/BoltBadge';
 import { AddTransactionForm } from '../forms/AddTransactionForm';
 import { CurrencySelector, useCurrency } from '../settings/CurrencySelector';
 import { AdvancedLineChart } from '../charts/AdvancedLineChart';
@@ -301,6 +302,11 @@ export const Dashboard: React.FC = () => {
       </div>
 
       <RecentTransactions transactions={transactions} formatAmount={formatAmount} />
+
+      {/* Built with Bolt.new Badge */}
+      <div className="flex justify-center pt-8">
+        <BoltBadge size="md" variant="default" />
+      </div>
 
       <AddTransactionForm
         isOpen={isAddTransactionOpen}

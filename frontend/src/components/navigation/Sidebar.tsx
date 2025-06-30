@@ -13,6 +13,7 @@ import {
   Tag
 } from 'lucide-react';
 import { ThemeToggle } from '../ui/ThemeToggle';
+import { BoltBadge } from '../ui/BoltBadge';
 import { useCurrency } from '../settings/CurrencySelector';
 
 interface SidebarProps {
@@ -142,6 +143,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Footer */}
       <div className="px-3 pb-4 flex-shrink-0 space-y-3">
+        {/* Built with Bolt.new Badge */}
+        {!isCollapsed && (
+          <div className="px-2 flex justify-center">
+            <BoltBadge size="sm" variant="default" />
+          </div>
+        )}
+
         {/* Theme Toggle */}
         {!isCollapsed && (
           <div className="px-2">
