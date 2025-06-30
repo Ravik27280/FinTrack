@@ -144,11 +144,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Footer */}
       <div className="px-3 pb-4 flex-shrink-0 space-y-3">
         {/* Built with Bolt.new Badge */}
-        {!isCollapsed && (
-          <div className="px-2 flex justify-center">
-            <BoltBadge size="sm" variant="default" />
-          </div>
-        )}
+        <div className={`flex ${isCollapsed ? 'justify-center' : 'justify-center'} px-2`}>
+          <BoltBadge 
+            size={isCollapsed ? "sm" : "md"} 
+            variant="custom" 
+            showText={!isCollapsed}
+          />
+        </div>
 
         {/* Theme Toggle */}
         {!isCollapsed && (

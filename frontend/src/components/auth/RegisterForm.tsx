@@ -5,6 +5,7 @@ import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { Card } from '../ui/Card';
 import { ThemeToggle } from '../ui/ThemeToggle';
+import { BoltBadge } from '../ui/BoltBadge';
 
 interface RegisterFormProps {
   onRegister: (name: string, email: string, password: string) => void;
@@ -80,6 +81,11 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onRegister, onSwitch
       {/* Theme toggle */}
       <div className="absolute top-6 right-6 z-10">
         <ThemeToggle />
+      </div>
+
+      {/* Bolt.new Badge - Top Left */}
+      <div className="absolute top-6 left-6 z-10">
+        <BoltBadge size="sm" variant="custom" />
       </div>
 
       <div className="max-w-md w-full space-y-8 relative z-10">
