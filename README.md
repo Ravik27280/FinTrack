@@ -1,48 +1,63 @@
 # 💰 FinTrack – Personal Expense Tracker with Budget & AI Insights
 
-![FinTrack Banner](https://img.shields.io/badge/FinTrack-Personal%20Finance%20Manager-green?style=for-the-badge)  
-A full-stack personal finance tracker that helps users manage expenses, set budgets, and gain insights through intuitive dashboards and smart analytics.
+![FinTrack Badge](https://img.shields.io/badge/FinTrack-Personal%20Finance%20Manager-green?style=for-the-badge)
+[![Made with Bolt](https://img.shields.io/badge/Made%20with-Bolt.new-blueviolet?style=for-the-badge&logo=thunder)](https://bolt.new)
+
+A modern full-stack personal finance tracker that helps users manage their income, expenses, and budgets — with intelligent insights and visual dashboards.
 
 ---
 
 ## 🚀 Features
 
-- 📊 **Dashboard Overview** – Track weekly, monthly, and yearly expenses with visual insights.
-- 🧾 **Transaction Management** – Add, edit, delete income or expense entries across categories.
-- 🎯 **Budgets & Goals** – Set category-wise budgets and savings goals with progress tracking.
-- 🧠 **AI Insights (Upcoming)** – Smart suggestions and alerts based on user spending behavior.
-- 🔔 **Alerts & Reminders** – Get notified when you exceed your budget limits.
-- 🔐 **Authentication System** – Secure sign-up/login system with role-based access (Admin/User).
-- 🌈 **Clean UI** – Modern and responsive frontend built with React and TailwindCSS.
+- 📊 **Dashboard Overview** – View weekly, monthly, and yearly expense trends.
+- 💸 **Transaction Management** – Add, edit, and delete categorized income/expenses.
+- 🎯 **Budgets & Goals** – Set budgets by category and monitor progress toward savings goals.
+- 🧠 **AI Insights (Coming Soon)** – Personalized suggestions based on spending patterns.
+- 🔔 **Budget Alerts** – Get notified when you exceed your budget limits.
+- 🔐 **User Authentication** – Secure login/signup system with role-based access.
+- 🌈 **Responsive UI** – Built using Tailwind CSS and React for a modern feel.
 
 ---
 
 ## 🛠️ Tech Stack
 
-**Frontend**  
-- ⚛️ React.js (Vite)  
-- 🧪 Zustand (State management)  
-- 🎨 Tailwind CSS  
-- 📁 Axios, React Router DOM
+### 🔹 Frontend
+- ⚛️ React.js (Vite)
+- 💅 Tailwind CSS
+- 🌐 React Router DOM
+- 🧪 Zustand (State Management)
+- 🔗 Axios
 
-**Backend**  
-- 🟢 Node.js + Express.js  
-- 🐬 MongoDB with Mongoose  
-- 🔐 JWT Authentication  
-- 📈 Aggregation pipelines for analytics
-
----
-
-## 📷 Screenshots
-
-<!-- You can replace with actual links -->
-| Dashboard | Budgets | Transactions | AI insights |
-|----------|----------|--------------|-------------|
-| ![Dashboard](https://github.com/Ravik27280/FinTrack/blob/main/dashboard.png) | ![Budgets](https://github.com/Ravik27280/FinTrack/blob/main/budget.png) | ![Transactions](https://github.com/Ravik27280/FinTrack/blob/main/transaction.png) | ![Insights](https://github.com/Ravik27280/FinTrack/blob/main/Insights.png)
+### 🔹 Backend
+- 🟢 Node.js + Express.js
+- 🐬 MongoDB with Mongoose
+- 🔐 JWT Authentication
+- 📊 MongoDB Aggregation Pipelines for analytics
+- 🌍 Deployed on [Render](https://render.com)
 
 ---
 
-## 🧪 Getting Started
+## 📸 Screenshots
+
+### 📊 Dashboard
+<img src="https://github.com/Ravik27280/FinTrack/blob/main/dashboard.png" width="100%" />
+
+### 🗂 Budgets
+<img src="https://github.com/Ravik27280/FinTrack/blob/main/budget.png" width="100%" />
+
+### 💸 Transactions
+<img src="https://github.com/Ravik27280/FinTrack/blob/main/transaction.png" width="100%" />
+
+### 🧠 AI Insights (Coming Soon)
+<img src="https://github.com/Ravik27280/FinTrack/blob/main/Insights.png" width="100%" />
+
+---
+
+![bolt](https://github.com/Ravik27280/FinTrack/blob/main/black_circle_360x360.png)
+
+---
+
+## 🧪 Getting StartedMore actions
 
 ### Prerequisites
 
