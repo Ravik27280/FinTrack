@@ -36,9 +36,9 @@ A full-stack personal finance tracker that helps users manage expenses, set budg
 ## 📷 Screenshots
 
 <!-- You can replace with actual links -->
-| Dashboard | Budgets | Transactions |
-|----------|----------|--------------|
-| ![Dashboard](https://via.placeholder.com/300x180.png?text=Dashboard) | ![Budgets](https://via.placeholder.com/300x180.png?text=Budgets) | ![Transactions](https://via.placeholder.com/300x180.png?text=Transactions) |
+| Dashboard | Budgets | Transactions | AI insights |
+|----------|----------|--------------|-------------|
+| ![Dashboard](https://github.com/Ravik27280/FinTrack/blob/main/dashboard.png) | ![Budgets](https://github.com/Ravik27280/FinTrack/blob/main/budget.png) | ![Transactions](https://github.com/Ravik27280/FinTrack/blob/main/transaction.png) | ![Insights](https://github.com/Ravik27280/FinTrack/blob/main/Insights.png)
 
 ---
 
