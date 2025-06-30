@@ -11,8 +11,6 @@ exports.getAllBudgets = async (req, res) => {
       const transactions = await Transaction.find({ userId: req.userId, category: budget.category, type: 'expense'});
       const spents = Math.abs(transactions.reduce((total, tx) => total + tx.amount, 0));
 
-      console.log('spents:', spents);
-
       // Update the budget document with the calculated spent amount
       const spentAmount = spents || 0;
       
@@ -20,8 +18,6 @@ exports.getAllBudgets = async (req, res) => {
       await Budget.findByIdAndUpdate(budget._id, { 
         spentAmount: spentAmount 
       }, { new: true });
-
-      console.log(`Budget ${budget.name} - Category: ${budget.category}, Spent: ${spentAmount}`);
 
       // Return the budget with updated spent amount
       return {
@@ -215,7 +211,6 @@ exports.getAnalytics = async (req, res) => {
 // Helper function to recalculate budget spent amounts (can be called after transaction changes)
 exports.recalculateBudgetSpending = async (userId) => {
   try {
-    console.log('Recalculating budget spending for user:', userId);
     const budgets = await Budget.find({ userId });
     
     await Promise.all(budgets.map(async budget => {
@@ -240,12 +235,9 @@ exports.recalculateBudgetSpending = async (userId) => {
       ]);
 
       const spentAmount = spent[0]?.total || 0;
-      console.log(`Updating budget ${budget.name} - Category: ${budget.category}, Spent: ${spentAmount}`);
       
       await Budget.findByIdAndUpdate(budget._id, { spentAmount });
     }));
-    
-    console.log('Budget spending recalculation completed');
   } catch (error) {
     console.error('Error recalculating budget spending:', error);
   }

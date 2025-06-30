@@ -59,9 +59,7 @@ export type NewBudgetGoal = Omit<BudgetGoal, "id" | "_id" | "userId">;
 // Budget CRUD operations
 export const getBudgets = async (): Promise<Budget[]> => {
   try {
-    console.log('Fetching budgets...');
     const res = await api.get<Budget[]>("/budgets");
-    console.log('Budgets response:', res.data);
     return res.data;
   } catch (error) {
     console.error('Error fetching budgets:', error);
@@ -71,9 +69,7 @@ export const getBudgets = async (): Promise<Budget[]> => {
 
 export const createBudget = async (data: NewBudget): Promise<Budget> => {
   try {
-    console.log('Creating budget:', data);
     const res = await api.post<Budget>("/budgets", data);
-    console.log('Create budget response:', res.data);
     return res.data;
   } catch (error) {
     console.error('Error creating budget:', error);
@@ -83,9 +79,7 @@ export const createBudget = async (data: NewBudget): Promise<Budget> => {
 
 export const updateBudget = async (id: string, data: Partial<NewBudget>): Promise<Budget> => {
   try {
-    console.log('Updating budget:', id, data);
     const res = await api.put<Budget>(`/budgets/${id}`, data);
-    console.log('Update budget response:', res.data);
     return res.data;
   } catch (error) {
     console.error('Error updating budget:', error);
@@ -95,9 +89,7 @@ export const updateBudget = async (id: string, data: Partial<NewBudget>): Promis
 
 export const deleteBudget = async (id: string): Promise<{ message: string }> => {
   try {
-    console.log('Deleting budget:', id);
     const res = await api.delete<{ message: string }>(`/budgets/${id}`);
-    console.log('Delete budget response:', res.data);
     return res.data;
   } catch (error) {
     console.error('Error deleting budget:', error);
@@ -107,9 +99,7 @@ export const deleteBudget = async (id: string): Promise<{ message: string }> => 
 
 export const getBudgetAnalytics = async (): Promise<BudgetAnalytics> => {
   try {
-    console.log('Fetching budget analytics...');
     const res = await api.get<BudgetAnalytics>("/budgets/analytics");
-    console.log('Budget analytics response:', res.data);
     return res.data;
   } catch (error) {
     console.error('Error fetching budget analytics:', error);
@@ -120,9 +110,7 @@ export const getBudgetAnalytics = async (): Promise<BudgetAnalytics> => {
 // Budget Goals CRUD operations
 export const getBudgetGoals = async (): Promise<BudgetGoal[]> => {
   try {
-    console.log('Fetching budget goals...');
     const res = await api.get<BudgetGoal[]>("/budgets/goals");
-    console.log('Budget goals response:', res.data);
     return res.data;
   } catch (error) {
     console.error('Error fetching budget goals:', error);
@@ -132,9 +120,7 @@ export const getBudgetGoals = async (): Promise<BudgetGoal[]> => {
 
 export const createBudgetGoal = async (data: NewBudgetGoal): Promise<BudgetGoal> => {
   try {
-    console.log('Creating budget goal:', data);
     const res = await api.post<BudgetGoal>("/budgets/goals", data);
-    console.log('Create budget goal response:', res.data);
     return res.data;
   } catch (error) {
     console.error('Error creating budget goal:', error);
@@ -144,9 +130,7 @@ export const createBudgetGoal = async (data: NewBudgetGoal): Promise<BudgetGoal>
 
 export const updateBudgetGoal = async (id: string, data: Partial<NewBudgetGoal>): Promise<BudgetGoal> => {
   try {
-    console.log('Updating budget goal:', id, data);
     const res = await api.put<BudgetGoal>(`/budgets/goals/${id}`, data);
-    console.log('Update budget goal response:', res.data);
     return res.data;
   } catch (error) {
     console.error('Error updating budget goal:', error);
@@ -156,9 +140,7 @@ export const updateBudgetGoal = async (id: string, data: Partial<NewBudgetGoal>)
 
 export const deleteBudgetGoal = async (id: string): Promise<{ message: string }> => {
   try {
-    console.log('Deleting budget goal:', id);
     const res = await api.delete<{ message: string }>(`/budgets/goals/${id}`);
-    console.log('Delete budget goal response:', res.data);
     return res.data;
   } catch (error) {
     console.error('Error deleting budget goal:', error);
@@ -169,9 +151,7 @@ export const deleteBudgetGoal = async (id: string): Promise<{ message: string }>
 // Force refresh budgets (useful after transaction changes)
 export const refreshBudgets = async (): Promise<Budget[]> => {
   try {
-    console.log('Force refreshing budgets...');
     const res = await api.post<Budget[]>("/budgets/refresh");
-    console.log('Refreshed budgets response:', res.data);
     return res.data;
   } catch (error) {
     console.error('Error refreshing budgets:', error);

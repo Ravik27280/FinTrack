@@ -71,9 +71,7 @@ export interface AIInsightsOverview {
 // Get AI insights overview
 export const getAIInsightsOverview = async (): Promise<AIInsightsOverview> => {
   try {
-    console.log('Fetching AI insights overview...');
     const res = await api.get<AIInsightsOverview>("/ai-insights/overview");
-    console.log('AI insights overview response:', res.data);
     return res.data;
   } catch (error) {
     console.error('Error fetching AI insights overview:', error);
@@ -89,9 +87,7 @@ export const getSpendingAnalysis = async (period: string = 'month'): Promise<{
   totalSpent: number;
 }> => {
   try {
-    console.log('Fetching spending analysis...');
     const res = await api.get(`/ai-insights/spending-analysis?period=${period}`);
-    console.log('Spending analysis response:', res.data);
     return res.data;
   } catch (error) {
     console.error('Error fetching spending analysis:', error);
@@ -106,9 +102,7 @@ export const getBudgetRecommendations = async (): Promise<{
   highPriority: number;
 }> => {
   try {
-    console.log('Fetching budget recommendations...');
     const res = await api.get("/ai-insights/budget-recommendations");
-    console.log('Budget recommendations response:', res.data);
     return res.data;
   } catch (error) {
     console.error('Error fetching budget recommendations:', error);
@@ -119,9 +113,7 @@ export const getBudgetRecommendations = async (): Promise<{
 // Get financial health score
 export const getFinancialHealth = async (): Promise<FinancialHealth> => {
   try {
-    console.log('Fetching financial health...');
     const res = await api.get<FinancialHealth>("/ai-insights/financial-health");
-    console.log('Financial health response:', res.data);
     return res.data;
   } catch (error) {
     console.error('Error fetching financial health:', error);
@@ -132,9 +124,7 @@ export const getFinancialHealth = async (): Promise<FinancialHealth> => {
 // Get spending predictions
 export const getSpendingPredictions = async (): Promise<SpendingPredictions> => {
   try {
-    console.log('Fetching spending predictions...');
     const res = await api.get<SpendingPredictions>("/ai-insights/predictions");
-    console.log('Spending predictions response:', res.data);
     return res.data;
   } catch (error) {
     console.error('Error fetching spending predictions:', error);

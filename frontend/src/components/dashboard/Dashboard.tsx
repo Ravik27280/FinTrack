@@ -83,13 +83,11 @@ export const Dashboard: React.FC = () => {
   const totalBalance = totalIncome - totalExpenses;
 
   const handleTransactionSuccess = async () => {
-    console.log('Transaction success - refreshing data...');
     await fetchTransactions();
     
     // Also refresh budgets to update spending calculations
     try {
       await refreshBudgets();
-      console.log('Budgets refreshed after transaction success');
     } catch (error) {
       console.warn('Failed to refresh budgets:', error);
     }

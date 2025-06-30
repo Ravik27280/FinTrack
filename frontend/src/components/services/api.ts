@@ -18,14 +18,13 @@ instance.interceptors.request.use((config: InternalAxiosRequestConfig): Internal
   return config;
 });
 
-// Add response interceptor for debugging
+// Add response interceptor for error handling
 instance.interceptors.response.use(
   (response) => {
-    console.log('API Response:', response.config.url, response.data);
     return response;
   },
   (error) => {
-    console.error('API Error:', error.config?.url, error.response?.data);
+    console.error('API Error:', error.response?.data || error.message);
     return Promise.reject(error);
   }
 );
