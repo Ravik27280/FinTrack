@@ -5,7 +5,7 @@
 
 A modern full-stack personal finance tracker that helps users manage their income, expenses, and budgets — with intelligent insights and visual dashboards.
 
-🌐 **Live Demo**: [https://fintrack-demo.netlify.app](https://fintrk.netlify.app/)
+🌐 **Live Demo**: [https://fintrk.netlify.app/](https://fintrk.netlify.app/)
 
 ---
 
